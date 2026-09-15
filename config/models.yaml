@@ -1,0 +1,72 @@
+# ============================================================================
+# Enrutamiento de modelos por agente (Cisco Experts Agency)
+# ----------------------------------------------------------------------------
+# Cada rol puede usar un proveedor y modelo distintos para equilibrar calidad y
+# costo. Las CREDENCIALES se leen del entorno (.env) por proveedor; un rol cuyo
+# proveedor no tenga credenciales corre en modo offline de forma individual.
+#
+# Resolución: rol específico -> `default` -> valores globales de .env
+# Proveedores válidos: openai | anthropic | azure
+#
+# Estrategia por defecto (costo-eficiente):
+#   - Modelos POTENTES para roles de razonamiento/rigor: coordinador, security,
+#     revisor técnico.
+#   - Modelo ECONÓMICO (gpt-4o-mini) para el resto de especialistas.
+# Ajusta libremente estos valores; también puedes mezclar proveedores por rol.
+# ============================================================================
+
+default:
+  provider: openai
+  model: gpt-4o-mini
+  temperature: 0.2
+  max_tokens: 4096
+
+roles:
+  # Entiende el negocio y define el alcance: conviene un modelo fuerte.
+  coordinator:
+    provider: openai
+    model: gpt-4o
+    temperature: 0.1
+
+  secure_networking:
+    provider: openai
+    model: gpt-4o-mini
+
+  # Dominio crítico (Zero Trust, micro-segmentación): modelo fuerte.
+  security:
+    provider: openai
+    model: gpt-4o
+
+  it_ot:
+    provider: openai
+    model: gpt-4o-mini
+
+  observability_soc:
+    provider: openai
+    model: gpt-4o-mini
+
+  datacenter_ai:
+    provider: openai
+    model: gpt-4o-mini
+
+  collaboration:
+    provider: openai
+    model: gpt-4o-mini
+
+  # Revisión rigurosa de compatibilidad/coherencia: modelo fuerte y frío.
+  technical_reviewer:
+    provider: openai
+    model: gpt-4o
+    temperature: 0.0
+
+# ----------------------------------------------------------------------------
+# Ejemplo de mezcla de proveedores (descomenta y ajusta si tienes credenciales):
+#
+#   security:
+#     provider: anthropic
+#     model: claude-opus-4-8
+#
+#   collaboration:
+#     provider: azure
+#     model: mi-deployment-gpt4o-mini
+# ----------------------------------------------------------------------------

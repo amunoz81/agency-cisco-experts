@@ -53,3 +53,5 @@ Clasifica hallazgos como `info`, `warning`, `blocker`. Una oferta con
 4. Regístralo en `agents/__init__.py` (`SPECIALIST_REGISTRY`).
 5. Ajusta `Coordinator.plan_scope()` para decidir cuándo convocarlo.
 6. Añade una etiqueta en `reporting/pdf_builder.py::ARCH_LABELS`.
+7. (Opcional) Añade su rol a `config/models.yaml` y a `routing.KNOWN_ROLES` para
+   asignarle un modelo específico; si no, usa el `default` del YAML.

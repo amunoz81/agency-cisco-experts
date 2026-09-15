@@ -48,6 +48,21 @@ cp .env.example .env      # completa LLM_PROVIDER y la API key correspondiente
 make run
 ```
 
+### Un modelo distinto por agente
+
+Cada rol puede usar su propio proveedor/modelo (calidad donde importa, costo en
+el resto). Se configura en [`config/models.yaml`](config/models.yaml):
+
+```bash
+cisco-agency models       # muestra rol → proveedor/modelo/modo
+```
+
+Por defecto: `coordinator`, `security` y `technical_reviewer` usan **gpt-4o**; el
+resto de especialistas usan **gpt-4o-mini**. Puedes mezclar proveedores por rol
+(OpenAI/Anthropic/Azure) si tienes sus credenciales en `.env`. Un rol sin
+credenciales de su proveedor corre en offline individual; los demás no se afectan.
+Ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#enrutamiento-de-modelos-por-agente).
+
 ## Roles de la agencia
 
 | Rol | Responsabilidad |

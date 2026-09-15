@@ -1,8 +1,10 @@
 """Base para agentes especialistas.
 
 Cada especialista carga su prompt de sistema desde `prompts/` y devuelve un
-`SpecialistFinding` en el formato común. En modo offline, cada subclase provee
-un hallazgo plantillado determinista (para demos y CI sin credenciales).
+`SpecialistFinding` en el formato común. El modelo LLM se resuelve **por rol** a
+través de un `ModelRouter`, de modo que cada agente puede usar un proveedor y
+modelo distintos. En modo offline (global o por falta de credenciales de ese
+proveedor), la subclase provee un hallazgo plantillado determinista.
 """
 
 from __future__ import annotations
@@ -13,7 +15,7 @@ from pathlib import Path
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from ..config import Settings, get_settings
-from ..llm import build_chat_model
+from ..routing import ModelRouter
 from ..schemas import Architecture, Opportunity, SpecialistFinding
 
 PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
@@ -23,8 +25,17 @@ class SpecialistAgent(ABC):
     architecture: Architecture
     prompt_file: str
 
-    def __init__(self, settings: Settings | None = None) -> None:
+    def __init__(
+        self,
+        settings: Settings | None = None,
+        router: ModelRouter | None = None,
+    ) -> None:
         self.settings = settings or get_settings()
+        self.router = router or ModelRouter(self.settings)
+
+    @property
+    def role(self) -> str:
+        return self.architecture.value
 
     # -- Prompt ------------------------------------------------------------
     def system_prompt(self) -> str:
@@ -35,13 +46,13 @@ class SpecialistAgent(ABC):
 
     # -- Interfaz principal ------------------------------------------------
     def analyze(self, opportunity: Opportunity) -> SpecialistFinding:
-        if self.settings.effective_offline():
+        if self.router.is_offline(self.role):
             return self._offline_finding(opportunity)
         return self._llm_finding(opportunity)
 
     # -- Ejecución con LLM -------------------------------------------------
     def _llm_finding(self, opportunity: Opportunity) -> SpecialistFinding:
-        model = build_chat_model(self.settings)
+        model = self.router.for_role(self.role)
         structured = model.with_structured_output(SpecialistFinding)
         messages = [
             SystemMessage(content=self.system_prompt()),

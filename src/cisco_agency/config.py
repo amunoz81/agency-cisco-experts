@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     llm_provider: Provider = Field(default="anthropic", alias="LLM_PROVIDER")
     offline: bool = Field(default=False, alias="OFFLINE")
 
+    # Ruta al YAML de enrutamiento de modelos por rol (opcional).
+    models_config: str | None = Field(default=None, alias="MODELS_CONFIG")
+
     # Anthropic
     anthropic_api_key: str | None = Field(default=None, alias="ANTHROPIC_API_KEY")
     anthropic_model: str = Field(default="claude-opus-4-8", alias="ANTHROPIC_MODEL")

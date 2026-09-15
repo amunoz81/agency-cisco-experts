@@ -18,6 +18,7 @@ from langgraph.graph import END, START, StateGraph
 from .agents import SPECIALIST_REGISTRY, Coordinator, TechnicalReviewer
 from .config import Settings, get_settings
 from .reporting import build_proposal
+from .routing import ModelRouter
 from .schemas import Bom
 from .skills import (
     build_financial_case,
@@ -54,7 +55,7 @@ def _make_planning(settings: Settings):
     return _node_planning
 
 
-def _make_specialists(settings: Settings):
+def _make_specialists(settings: Settings, router: ModelRouter):
     def _node_specialists(state: AgencyState) -> AgencyState:
         opportunity = state["opportunity"]
         selected = state.get("selected_specialists", [])
@@ -64,9 +65,15 @@ def _make_specialists(settings: Settings):
             agent_cls = SPECIALIST_REGISTRY.get(name)
             if not agent_cls:
                 continue
-            finding = agent_cls(settings).analyze(opportunity)
+            agent = agent_cls(settings, router)
+            finding = agent.analyze(opportunity)
+            cfg = router.resolve(name)
+            engine = "offline" if router.is_offline(name) else f"{cfg.provider}/{cfg.model}"
             findings.append(finding)
-            log.append(f"Especialista {name}: hallazgo generado ({finding.scope.value}).")
+            log.append(
+                f"Especialista {name} · motor {engine} · "
+                f"hallazgo generado ({finding.scope.value})."
+            )
         return {"findings": findings, "log": log}
 
     return _node_specialists
@@ -126,12 +133,13 @@ def _make_proposal(settings: Settings, out_dir: str):
 def build_graph(settings: Settings | None = None, out_dir: str = "output"):
     """Compila y devuelve el grafo ejecutable de la agencia."""
     settings = settings or get_settings()
+    router = ModelRouter(settings)
     Path(out_dir).mkdir(parents=True, exist_ok=True)
 
     g = StateGraph(AgencyState)
     g.add_node("discovery", _node_discovery)
     g.add_node("planning", _make_planning(settings))
-    g.add_node("specialists", _make_specialists(settings))
+    g.add_node("specialists", _make_specialists(settings, router))
     g.add_node("integration", _node_integration)
     g.add_node("bom", _node_bom)
     g.add_node("finance", _make_finance(settings))

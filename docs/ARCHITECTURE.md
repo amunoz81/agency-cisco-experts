@@ -26,7 +26,7 @@ discovery ─► planning ─► specialists ─► integration ─► bom ─�
 
 ## Multi-proveedor de LLM
 
-`llm.py` construye el `BaseChatModel` según `LLM_PROVIDER`:
+`llm.py` construye el `BaseChatModel` según el proveedor:
 
 - `anthropic` → `langchain_anthropic.ChatAnthropic`
 - `openai` → `langchain_openai.ChatOpenAI`
@@ -34,6 +34,33 @@ discovery ─► planning ─► specialists ─► integration ─► bom ─�
 
 Los agentes usan `model.with_structured_output(SpecialistFinding)` para obtener
 la salida ya validada por Pydantic.
+
+## Enrutamiento de modelos por agente
+
+Cada rol puede usar **su propio proveedor y modelo** para equilibrar calidad y
+costo. Lo resuelve `ModelRouter` (`routing.py`) a partir de un YAML declarativo
+(`config/models.yaml`), con este orden de precedencia:
+
+```
+rol específico  →  `default` del YAML  →  valores globales de .env
+```
+
+Ejemplo de estrategia costo-eficiente (la de por defecto):
+
+| Rol | Modelo | Motivo |
+|-----|--------|--------|
+| coordinator | gpt-4o | Razonamiento de negocio y alcance |
+| security | gpt-4o | Dominio crítico (Zero Trust) |
+| technical_reviewer | gpt-4o | Revisión rigurosa |
+| resto de especialistas | gpt-4o-mini | Volumen a bajo costo |
+
+Se pueden **mezclar proveedores** por rol (p. ej. `security` en Anthropic y el
+resto en OpenAI) siempre que existan las credenciales de cada proveedor en
+`.env`. Un rol cuyo proveedor no tenga credenciales corre en **modo offline de
+forma individual**; los demás siguen usando su LLM.
+
+Inspección: `cisco-agency models` (o `python -m cisco_agency.run models`) imprime
+la tabla rol → proveedor/modelo/modo. Cambia la ruta del YAML con `MODELS_CONFIG`.
 
 ## Modo offline
 
