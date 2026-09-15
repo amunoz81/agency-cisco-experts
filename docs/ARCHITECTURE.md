@@ -86,6 +86,24 @@ exporta a PDF con dos motores, en orden:
 
 Si ninguno está disponible, se genera solo el HTML y se reporta el motivo.
 
+## Grounding / evidencia (anti-alucinación)
+
+Antes de responder, cada especialista se **fundamenta** en una base de
+conocimiento (`knowledge/`): recupera documentos del corpus para su arquitectura
+y la oportunidad, los inyecta en el prompt como contexto citable (modo LLM) y los
+adjunta al hallazgo como `Evidence` con fuente/fecha/versión/estado.
+
+- `KnowledgeBase` (`knowledge/base.py`): carga `knowledge/corpus/*.md` (frontmatter
+  YAML + cuerpo) y hace recuperación por palabras clave, sin dependencias ni red.
+- Corpus semilla: estándares reales verificados (NIST SP 800-207, CISA ZTMM,
+  IEC 62443) y **plantillas** de producto (`TEMPLATE-*.md`) marcadas como
+  `condicionada`, para que el equipo las reemplace con material oficial.
+- Punto de extensión: sustituir el scorer por embeddings / vector store para RAG
+  a escala, manteniendo la misma interfaz `search()` / `evidence_for()`.
+
+Esto evita inventar afirmaciones: lo no respaldado queda como `pendiente` o
+`condicionada`, y el revisor lo separa de lo `verificada`.
+
 ## Human-in-the-loop (aprobación de alcance)
 
 Tras `planning` hay una compuerta `scope_gate` donde un humano aprueba o edita el

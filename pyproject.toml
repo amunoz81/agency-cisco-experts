@@ -46,6 +46,14 @@ cisco-agency = "cisco_agency.run:app"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+cisco_agency = [
+    "prompts/*.md",
+    "knowledge/corpus/*.md",
+    "reporting/templates/*.j2",
+    "models.yaml",
+]
+
 [tool.ruff]
 line-length = 100
 target-version = "py311"

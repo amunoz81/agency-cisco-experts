@@ -18,6 +18,7 @@ from langgraph.graph import END, START, StateGraph
 from .agents import SPECIALIST_REGISTRY, Coordinator, TechnicalReviewer
 from .approval import Approver, AutoApprover
 from .config import Settings, get_settings
+from .knowledge import KnowledgeBase
 from .reporting import build_proposal
 from .routing import ModelRouter
 from .schemas import Bom
@@ -75,7 +76,7 @@ def _route_after_gate(state: AgencyState) -> str:
     return "specialists" if state.get("scope_approved", True) else END
 
 
-def _make_specialists(settings: Settings, router: ModelRouter):
+def _make_specialists(settings: Settings, router: ModelRouter, kb: KnowledgeBase):
     def _node_specialists(state: AgencyState) -> AgencyState:
         opportunity = state["opportunity"]
         selected = state.get("selected_specialists", [])
@@ -85,7 +86,7 @@ def _make_specialists(settings: Settings, router: ModelRouter):
             agent_cls = SPECIALIST_REGISTRY.get(name)
             if not agent_cls:
                 continue
-            agent = agent_cls(settings, router)
+            agent = agent_cls(settings, router, kb)
             finding = agent.analyze(opportunity)
             cfg = router.resolve(name)
             engine = "offline" if router.is_offline(name) else f"{cfg.provider}/{cfg.model}"
@@ -162,6 +163,7 @@ def build_graph(
     """
     settings = settings or get_settings()
     router = ModelRouter(settings)
+    kb = KnowledgeBase()
     approver = approver or AutoApprover()
     Path(out_dir).mkdir(parents=True, exist_ok=True)
 
@@ -169,7 +171,7 @@ def build_graph(
     g.add_node("discovery", _node_discovery)
     g.add_node("planning", _make_planning(settings))
     g.add_node("scope_gate", _make_scope_gate(approver))
-    g.add_node("specialists", _make_specialists(settings, router))
+    g.add_node("specialists", _make_specialists(settings, router, kb))
     g.add_node("integration", _node_integration)
     g.add_node("bom", _node_bom)
     g.add_node("finance", _make_finance(settings))
