@@ -1,5 +1,6 @@
 """Agentes de la agencia: coordinador, especialistas y revisor."""
 
+from .collaboration import CollaborationSpecialist  # noqa: F401
 from .coordinator import Coordinator  # noqa: F401
 from .datacenter_ai import DatacenterAISpecialist  # noqa: F401
 from .it_ot import ItOtSpecialist  # noqa: F401
@@ -14,4 +15,5 @@ SPECIALIST_REGISTRY = {
     "it_ot": ItOtSpecialist,
     "observability_soc": ObservabilitySocSpecialist,
     "datacenter_ai": DatacenterAISpecialist,
+    "collaboration": CollaborationSpecialist,
 }

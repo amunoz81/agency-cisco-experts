@@ -34,7 +34,8 @@ def test_graph_end_to_end_offline(tmp_path):
     assert "Fanalca" in content
     assert "STAR" in content
 
-    # IT/OT y SOC deben entrar por las banderas del ejemplo Fanalca.
+    # IT/OT, SOC y Colaboración deben entrar por las banderas del ejemplo Fanalca.
     archs = {f.architecture.value for f in final["findings"]}
     assert "it_ot" in archs
     assert "observability_soc" in archs
+    assert "collaboration" in archs

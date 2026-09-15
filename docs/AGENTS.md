@@ -29,6 +29,7 @@ Todos heredan de `SpecialistAgent` (`base.py`) y devuelven un `SpecialistFinding
 | `ItOtSpecialist` | Cyber Vision, Catalyst IE3x00, ISE/TrustSec, IDMZ |
 | `ObservabilitySocSpecialist` | Splunk ES/SOAR, ThousandEyes |
 | `DatacenterAISpecialist` | UCS, Nexus, Intersight, AI PODs |
+| `CollaborationSpecialist` | Webex Suite/Calling, Contact Center, dispositivos Webex, Control Hub, PSTN/CUBE |
 
 ## Revisor técnico (`technical_reviewer.py`)
 

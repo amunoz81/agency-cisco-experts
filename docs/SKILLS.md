@@ -10,6 +10,7 @@ están encapsuladas en los especialistas).
 | Diseño Secure Networking | `agents/secure_networking` | `Opportunity` | Acceso, identidad, segmentación, conectividad | `SpecialistFinding` |
 | Diseño de ciberseguridad | `agents/security` | `Opportunity` | Zero Trust, micro-segmentación, NDR/EDR | `SpecialistFinding` |
 | Diseño IT/OT | `agents/it_ot` | `Opportunity` | Zonas, sensores, comunicaciones | `SpecialistFinding` |
+| Diseño de colaboración | `agents/collaboration` | `Opportunity` | UC, telefonía, salas, Contact Center | `SpecialistFinding` |
 | Verificación de portafolio | `portfolio_verification` | `findings` | Evalúa sustento por evidencia | Resumen de cobertura y gaps |
 | Integración entre arquitecturas | `integration` | `findings` | Flujos, políticas, responsabilidades | dict de integración |
 | BOM y licenciamiento | `bom_licensing` | `findings` | Consolida sin duplicados | `Bom` |

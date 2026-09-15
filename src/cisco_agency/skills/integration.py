@@ -37,6 +37,17 @@ def integrate_architectures(findings: list[SpecialistFinding]) -> dict:
             "Micro-segmentación del datacenter con Secure Workload/Hypershield "
             "coherente con la política de identidad."
         )
+    if "collaboration" in present:
+        if "secure_networking" in present:
+            policy_points.append(
+                "QoS/DSCP y SD-WAN de Secure Networking priorizan voz y video de "
+                "Webex; SSO/DUO para acceso seguro a Colaboración."
+            )
+        if "observability_soc" in present:
+            flows.append(
+                "Experiencia de Webex desde Control Hub/ThousandEyes hacia el SOC "
+                "para correlación de calidad de llamada y disponibilidad."
+            )
 
     # Consolidar dependencias declaradas por los especialistas
     for f in findings:
@@ -52,5 +63,6 @@ def integrate_architectures(findings: list[SpecialistFinding]) -> dict:
             "SecOps: Security (Firewall, Workload, NDR/EDR) y SOC (Splunk)",
             "OT/Planta: IT/OT (Cyber Vision) con SecOps",
             "DC/Cloud: Data Center y AI (UCS/Nexus/Intersight)",
+            "CollabOps: Collaboration (Webex/Control Hub)",
         ],
     }

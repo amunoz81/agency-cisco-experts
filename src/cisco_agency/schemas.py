@@ -22,6 +22,7 @@ class Architecture(str, Enum):
     IT_OT = "it_ot"
     OBSERVABILITY_SOC = "observability_soc"
     DATACENTER_AI = "datacenter_ai"
+    COLLABORATION = "collaboration"
 
 
 class ScopeClassification(str, Enum):
@@ -142,6 +143,7 @@ class Opportunity(BaseModel):
     it_ot_present: bool = False
     needs_correlation_soc: bool = False
     needs_datacenter_ai: bool = False
+    needs_collaboration: bool = False
 
 
 # --------------------------------------------------------------------------

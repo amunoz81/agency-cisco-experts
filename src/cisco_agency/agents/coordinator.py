@@ -48,6 +48,12 @@ class Coordinator:
             if opportunity.needs_datacenter_ai
             else ScopeClassification.OPTIONAL
         )
+
+        plan[Architecture.COLLABORATION.value] = (
+            ScopeClassification.NECESSARY
+            if opportunity.needs_collaboration
+            else ScopeClassification.OPTIONAL
+        )
         return plan
 
     @staticmethod

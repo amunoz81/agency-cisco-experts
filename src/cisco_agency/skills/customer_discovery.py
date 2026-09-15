@@ -41,5 +41,15 @@ def build_opportunity(raw: dict) -> Opportunity:
                 for k in ("gpu", "ia", "ai", "datacenter", "cómputo", "computo")
             ),
         ),
+        needs_collaboration=raw.get(
+            "needs_collaboration",
+            any(
+                k in workloads_text
+                for k in (
+                    "colabora", "webex", "telefon", "voz", "video",
+                    "reunion", "reunión", "contact center", "uc", "pbx",
+                )
+            ),
+        ),
     )
     return opp

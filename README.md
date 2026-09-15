@@ -58,6 +58,7 @@ make run
 | **Especialista IT/OT** | Zonas industriales, comunicaciones permitidas, visibilidad con Cyber Vision, sin afectar producción. |
 | **Observabilidad y SOC** | Splunk, ThousandEyes: correlación cross-domain, experiencia digital y respuesta. |
 | **Data Center y AI** | Cómputo, red de DC, virtualización y AI Fabric (AI PODs con GPU). |
+| **Collaboration** | Comunicaciones unificadas y colaboración híbrida (Webex Suite/Calling, Contact Center, dispositivos, Control Hub, PSTN). |
 | **Revisor técnico independiente** | Compatibilidad, dimensionamiento, dependencias, licencias y coherencia. |
 
 Ver [docs/AGENTS.md](docs/AGENTS.md).

@@ -31,6 +31,7 @@ ARCH_LABELS = {
     "it_ot": "IT/OT (Cyber Vision)",
     "observability_soc": "Observabilidad y SOC",
     "datacenter_ai": "Data Center y AI",
+    "collaboration": "Collaboration (Webex)",
 }
 
 
@@ -79,6 +80,8 @@ def _default_use_cases(findings: list[SpecialistFinding]) -> list[str]:
         cases.append("Correlación cross-domain y respuesta automatizada en el SOC.")
     if "datacenter_ai" in present:
         cases.append("Plataforma de datacenter e IA con seguridad integrada.")
+    if "collaboration" in present:
+        cases.append("Colaboración híbrida segura (Webex) con voz, video y salas.")
     return cases
 
 

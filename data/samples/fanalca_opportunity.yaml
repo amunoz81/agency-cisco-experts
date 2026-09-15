@@ -7,6 +7,7 @@ objectives:
   - "Implementar Zero Trust de extremo a extremo alineado a NIST/CISA"
   - "Dar visibilidad y control a los entornos industriales (OT) sin afectar producción"
   - "Habilitar correlación y respuesta centralizada (SOC)"
+  - "Modernizar las comunicaciones a colaboración híbrida segura (Webex)"
 sites:
   - { name: "Sede Cali (HQ)", kind: "campus", users: 800 }
   - { name: "Planta Yumbo", kind: "planta", users: 350 }
@@ -27,6 +28,7 @@ horizon_years: 3
 it_ot_present: true
 needs_correlation_soc: true
 needs_datacenter_ai: false
+needs_collaboration: true
 pending_data:
   - "Inventario detallado con modelos y versiones de SW"
   - "Topología actual y diagramas de red OT"
