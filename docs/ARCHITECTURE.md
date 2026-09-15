@@ -147,12 +147,27 @@ contrato (`approve_scope`).
 - **Trazas profundas**: exporta `LANGCHAIN_TRACING_V2=true` y `LANGSMITH_API_KEY`
   para enviar trazas por nodo, tokens y latencia a LangSmith (ver `.env.example`).
 
+## Especialistas en paralelo (fan-out)
+
+Los especialistas se ejecutan en **paralelo** mediante el API `Send` de LangGraph:
+`scope_gate` (y, en una revisión, `critic`) emiten un `Send("specialist_worker", …)`
+por cada arquitectura seleccionada; todos los workers corren en el mismo superstep
+y convergen en `integration`.
+
+El canal `findings` usa el reducer `upsert_findings` (`state.py`): inserta/actualiza
+**por arquitectura**, de modo que el fan-out no duplica y una revisión reemplaza
+solo el aporte de la arquitectura objetivo. El orden de salida es determinista
+(orden canónico de `Architecture`), independiente del orden de finalización.
+
+En modo LLM esto paraleliza las llamadas de red (menor latencia total); en offline
+el beneficio es estructural. El worker recibe su `role`/`opportunity`/`feedback`
+en el payload del `Send`.
+
 ## Extender el grafo
 
-Para ejecutar especialistas en **paralelo**, el reducer `operator.add` sobre
-`findings` en `AgencyState` ya soporta fan-out: convierte cada especialista en su
-propio nodo y usa aristas condicionales desde `planning`. La versión actual los
-ejecuta en un solo nodo secuencial por simplicidad y determinismo.
+Nuevos especialistas o skills se conectan como se describe en `docs/AGENTS.md` y
+`docs/SKILLS.md`. Para intervención humana adicional, añade compuertas `Approver`
+o `interrupt` entre nodos.
 
 ## Persistencia / checkpoints
 

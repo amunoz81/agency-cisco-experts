@@ -35,7 +35,9 @@ def test_graph_end_to_end_offline(tmp_path):
     assert "STAR" in content
 
     # IT/OT, SOC y Colaboración deben entrar por las banderas del ejemplo Fanalca.
-    archs = {f.architecture.value for f in final["findings"]}
+    archs = [f.architecture.value for f in final["findings"]]
     assert "it_ot" in archs
     assert "observability_soc" in archs
     assert "collaboration" in archs
+    # El fan-out paralelo no debe duplicar arquitecturas (reducer upsert).
+    assert len(archs) == len(set(archs))

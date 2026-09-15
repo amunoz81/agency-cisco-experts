@@ -15,6 +15,11 @@ from pathlib import Path
 
 from langgraph.graph import END, START, StateGraph
 
+try:  # ubicación del API Send según versión de LangGraph
+    from langgraph.types import Send
+except ImportError:  # pragma: no cover
+    from langgraph.constants import Send
+
 from .agents import SPECIALIST_REGISTRY, Coordinator, TechnicalReviewer
 from .approval import Approver, AutoApprover
 from .config import Settings, get_settings
@@ -72,45 +77,51 @@ def _make_scope_gate(approver: Approver):
     return _node_scope_gate
 
 
-def _route_after_gate(state: AgencyState) -> str:
-    return "specialists" if state.get("scope_approved", True) else END
+def _route_after_gate(state: AgencyState):
+    if not state.get("scope_approved", True):
+        return END
+    return _dispatch_specialists(state)
 
 
 MAX_REVISIONS = 1
 
 
-def _make_specialists(settings: Settings, router: ModelRouter, kb: KnowledgeBase):
-    def _node_specialists(state: AgencyState) -> AgencyState:
-        opportunity = state["opportunity"]
-        selected = state.get("selected_specialists", [])
-        feedback = state.get("review_feedback", "")
-        targets = set(state.get("critique").revision_targets) if state.get("critique") else set()
-        prev = {f.architecture.value: f for f in state.get("findings", [])}
-        revising = bool(feedback)
+def _make_specialist_worker(settings: Settings, router: ModelRouter, kb: KnowledgeBase):
+    """Worker de un especialista (se ejecuta en paralelo vía fan-out `Send`)."""
 
-        findings = []
-        log = []
-        for name in selected:
-            agent_cls = SPECIALIST_REGISTRY.get(name)
-            if not agent_cls:
-                continue
-            # En una revisión, solo se rehacen las arquitecturas objetivo.
-            if revising and targets and name not in targets and name in prev:
-                findings.append(prev[name])
-                continue
-            agent = agent_cls(settings, router, kb)
-            finding = agent.analyze(opportunity, feedback=feedback or None)
-            cfg = router.resolve(name)
-            engine = "offline" if router.is_offline(name) else f"{cfg.provider}/{cfg.model}"
-            findings.append(finding)
-            tag = " (revisión)" if revising else ""
-            log.append(
+    def _worker(payload: dict) -> AgencyState:
+        name = payload["role"]
+        opportunity = payload["opportunity"]
+        feedback = payload.get("feedback") or None
+        agent_cls = SPECIALIST_REGISTRY[name]
+        agent = agent_cls(settings, router, kb)
+        finding = agent.analyze(opportunity, feedback=feedback)
+        cfg = router.resolve(name)
+        engine = "offline" if router.is_offline(name) else f"{cfg.provider}/{cfg.model}"
+        tag = " (revisión)" if feedback else ""
+        return {
+            "findings": [finding],
+            "log": [
                 f"Especialista {name} · motor {engine}{tag} · "
                 f"hallazgo generado ({finding.scope.value})."
-            )
-        return {"findings": findings, "log": log}
+            ],
+        }
 
-    return _node_specialists
+    return _worker
+
+
+def _dispatch_specialists(state: AgencyState, only: list[str] | None = None):
+    """Devuelve los `Send` para ejecutar los especialistas en paralelo."""
+    selected = state.get("selected_specialists", [])
+    roles = [r for r in (only or selected) if r in SPECIALIST_REGISTRY]
+    if not roles:
+        return "integration"
+    opportunity = state["opportunity"]
+    feedback = state.get("review_feedback", "")
+    return [
+        Send("specialist_worker", {"role": r, "opportunity": opportunity, "feedback": feedback})
+        for r in roles
+    ]
 
 
 def _node_integration(state: AgencyState) -> AgencyState:
@@ -174,8 +185,13 @@ def _make_critic(settings: Settings, router: ModelRouter):
     return _node_critic
 
 
-def _route_after_critic(state: AgencyState) -> str:
-    return "specialists" if state.get("should_revise") else "synthesis"
+def _route_after_critic(state: AgencyState):
+    if not state.get("should_revise"):
+        return "synthesis"
+    critique = state.get("critique")
+    selected = state.get("selected_specialists", [])
+    targets = [t for t in (critique.revision_targets if critique else []) if t in selected]
+    return _dispatch_specialists(state, only=targets or selected)
 
 
 def _make_synthesis(settings: Settings, router: ModelRouter):
@@ -235,7 +251,7 @@ def build_graph(
     g.add_node("discovery", _node_discovery)
     g.add_node("planning", _make_planning(settings))
     g.add_node("scope_gate", _make_scope_gate(approver))
-    g.add_node("specialists", _make_specialists(settings, router, kb))
+    g.add_node("specialist_worker", _make_specialist_worker(settings, router, kb))
     g.add_node("integration", _node_integration)
     g.add_node("bom", _node_bom)
     g.add_node("finance", _make_finance(settings))
@@ -247,14 +263,19 @@ def build_graph(
     g.add_edge(START, "discovery")
     g.add_edge("discovery", "planning")
     g.add_edge("planning", "scope_gate")
-    g.add_conditional_edges("scope_gate", _route_after_gate, ["specialists", END])
-    g.add_edge("specialists", "integration")
+    # Fan-out paralelo de especialistas (o END si se rechaza el alcance).
+    g.add_conditional_edges(
+        "scope_gate", _route_after_gate, ["specialist_worker", "integration", END]
+    )
+    g.add_edge("specialist_worker", "integration")
     g.add_edge("integration", "bom")
     g.add_edge("bom", "finance")
     g.add_edge("finance", "review")
     g.add_edge("review", "critic")
-    # Reflexión acotada: el crítico puede devolver el diseño a los especialistas.
-    g.add_conditional_edges("critic", _route_after_critic, ["specialists", "synthesis"])
+    # Reflexión acotada: el crítico puede re-despachar especialistas (paralelo).
+    g.add_conditional_edges(
+        "critic", _route_after_critic, ["specialist_worker", "integration", "synthesis"]
+    )
     g.add_edge("synthesis", "proposal")
     g.add_edge("proposal", END)
 
