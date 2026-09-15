@@ -29,11 +29,17 @@ def _load_input(path: Path) -> dict:
 def run(
     opportunity_file: Path = typer.Argument(..., help="YAML/JSON con la oportunidad."),
     out: str = typer.Option("output", help="Directorio de salida."),
+    yes: bool = typer.Option(
+        False, "--yes", "-y",
+        help="Desatendido: aprueba el alcance sin preguntar (para CI/scripts).",
+    ),
 ) -> None:
     """Ejecuta el pipeline completo y genera la propuesta."""
+    from .approval import AutoApprover, CLIApprover
     from .routing import ModelRouter
 
     settings = get_settings()
+    approver = AutoApprover() if yes else CLIApprover()
     router = ModelRouter(settings)
     rows = router.table()
     llm_roles = sum(1 for r in rows if r["mode"] == "llm")
@@ -53,8 +59,12 @@ def run(
     )
 
     raw = _load_input(opportunity_file)
-    graph = build_graph(settings, out_dir=out)
+    graph = build_graph(settings, out_dir=out, approver=approver)
     final = graph.invoke({"raw_input": raw, "offline": settings.offline})
+
+    if not final.get("scope_approved", True):
+        console.print("[yellow]Alcance rechazado por el revisor. No se generó propuesta.[/yellow]")
+        return
 
     # Log de ejecución
     table = Table(title="Ejecución del grafo", show_header=False, border_style="blue")

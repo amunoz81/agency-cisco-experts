@@ -19,7 +19,7 @@ install-pdf:
 	. .venv/bin/activate && pip install -e ".[pdf]"
 
 demo:
-	OFFLINE=true python -m cisco_agency.run run data/samples/fanalca_opportunity.yaml --out output
+	OFFLINE=true python -m cisco_agency.run run data/samples/fanalca_opportunity.yaml --out output --yes
 
 run:
 	python -m cisco_agency.run run data/samples/fanalca_opportunity.yaml --out output

@@ -31,6 +31,7 @@ class AgencyState(TypedDict, total=False):
     # Decisión de alcance del coordinador: arquitectura -> clasificación
     scope_plan: dict[str, ScopeClassification]
     selected_specialists: list[str]
+    scope_approved: bool
 
     # Hallazgos de especialistas (formato común)
     findings: Annotated[list[SpecialistFinding], operator.add]

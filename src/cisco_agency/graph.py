@@ -16,6 +16,7 @@ from pathlib import Path
 from langgraph.graph import END, START, StateGraph
 
 from .agents import SPECIALIST_REGISTRY, Coordinator, TechnicalReviewer
+from .approval import Approver, AutoApprover
 from .config import Settings, get_settings
 from .reporting import build_proposal
 from .routing import ModelRouter
@@ -53,6 +54,25 @@ def _make_planning(settings: Settings):
         }
 
     return _node_planning
+
+
+def _make_scope_gate(approver: Approver):
+    """Compuerta HITL: un humano aprueba o edita el alcance antes de diseñar."""
+
+    def _node_scope_gate(state: AgencyState) -> AgencyState:
+        decision = approver.approve_scope(state["opportunity"], state["scope_plan"])
+        return {
+            "scope_plan": decision.scope_plan,
+            "selected_specialists": decision.selected_specialists,
+            "scope_approved": decision.approved,
+            "log": ["HITL alcance: " + " ".join(decision.notes)],
+        }
+
+    return _node_scope_gate
+
+
+def _route_after_gate(state: AgencyState) -> str:
+    return "specialists" if state.get("scope_approved", True) else END
 
 
 def _make_specialists(settings: Settings, router: ModelRouter):
@@ -130,15 +150,25 @@ def _make_proposal(settings: Settings, out_dir: str):
     return _node_proposal
 
 
-def build_graph(settings: Settings | None = None, out_dir: str = "output"):
-    """Compila y devuelve el grafo ejecutable de la agencia."""
+def build_graph(
+    settings: Settings | None = None,
+    out_dir: str = "output",
+    approver: Approver | None = None,
+):
+    """Compila y devuelve el grafo ejecutable de la agencia.
+
+    `approver` implementa la compuerta HITL de aprobación del alcance.
+    Por defecto `AutoApprover` (desatendido); usa `CLIApprover` para interactivo.
+    """
     settings = settings or get_settings()
     router = ModelRouter(settings)
+    approver = approver or AutoApprover()
     Path(out_dir).mkdir(parents=True, exist_ok=True)
 
     g = StateGraph(AgencyState)
     g.add_node("discovery", _node_discovery)
     g.add_node("planning", _make_planning(settings))
+    g.add_node("scope_gate", _make_scope_gate(approver))
     g.add_node("specialists", _make_specialists(settings, router))
     g.add_node("integration", _node_integration)
     g.add_node("bom", _node_bom)
@@ -148,7 +178,8 @@ def build_graph(settings: Settings | None = None, out_dir: str = "output"):
 
     g.add_edge(START, "discovery")
     g.add_edge("discovery", "planning")
-    g.add_edge("planning", "specialists")
+    g.add_edge("planning", "scope_gate")
+    g.add_conditional_edges("scope_gate", _route_after_gate, ["specialists", END])
     g.add_edge("specialists", "integration")
     g.add_edge("integration", "bom")
     g.add_edge("bom", "finance")

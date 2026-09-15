@@ -86,6 +86,19 @@ exporta a PDF con dos motores, en orden:
 
 Si ninguno está disponible, se genera solo el HTML y se reporta el motivo.
 
+## Human-in-the-loop (aprobación de alcance)
+
+Tras `planning` hay una compuerta `scope_gate` donde un humano aprueba o edita el
+alcance **antes** de diseñar (lo costoso). Es conectable vía `approval.Approver`:
+
+- `AutoApprover` — aprueba tal cual (desatendido / CI / pruebas; `--yes` en CLI).
+- `CLIApprover` — pregunta por terminal y permite forzar incluir/excluir
+  arquitecturas.
+
+Si se rechaza, el grafo va directo a `END` sin generar propuesta. Para una UI
+asíncrona, sustituye el approver por `langgraph.interrupt` manteniendo el mismo
+contrato (`approve_scope`).
+
 ## Extender el grafo
 
 Para ejecutar especialistas en **paralelo**, el reducer `operator.add` sobre

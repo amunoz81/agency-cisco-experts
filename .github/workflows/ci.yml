@@ -35,5 +35,5 @@ jobs:
 
       - name: Smoke demo (offline)
         run: |
-          python -m cisco_agency.run run data/samples/fanalca_opportunity.yaml --out output
+          python -m cisco_agency.run run data/samples/fanalca_opportunity.yaml --out output --yes
           test -f output/propuesta_fanalca.html
