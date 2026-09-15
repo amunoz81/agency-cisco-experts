@@ -58,9 +58,15 @@ def run(
         )
     )
 
+    import time
+
+    from .metrics import run_report
+
     raw = _load_input(opportunity_file)
     graph = build_graph(settings, out_dir=out, approver=approver)
+    t0 = time.perf_counter()
     final = graph.invoke({"raw_input": raw, "offline": settings.offline})
+    duration = time.perf_counter() - t0
 
     if not final.get("scope_approved", True):
         console.print("[yellow]Alcance rechazado por el revisor. No se generó propuesta.[/yellow]")
@@ -87,6 +93,64 @@ def run(
             f"\n[bold]Revisión técnica:[/bold] {status} · "
             f"{len(review.issues)} observación/es"
         )
+
+    # Reporte de métricas (observabilidad)
+    report = run_report(final, duration_s=duration)
+    report_path = Path(out) / f"run_report_{report['customer'].lower().replace(' ', '_')}.json"
+    report_path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    mtable = Table(title="Métricas de la corrida", border_style="magenta")
+    mtable.add_column("Métrica", style="bold")
+    mtable.add_column("Valor")
+    mtable.add_row("Duración (s)", str(report["duration_s"]))
+    mtable.add_row("Arquitecturas", str(report["n_findings"]))
+    mtable.add_row("Líneas BOM (dups)", f"{report['bom_lines']} ({report['bom_duplicates']})")
+    mtable.add_row(
+        "Evidencia verificada",
+        f"{report['evidence_verified']}/{report['evidence_total']}",
+    )
+    mtable.add_row("Cobertura evidencia", f"{report['evidence_coverage']:.0%}")
+    mtable.add_row("Revisiones (reflexión)", str(report["revision_count"]))
+    console.print(mtable)
+    console.print(f"[dim]Reporte: {report_path}[/dim]")
+
+
+@app.command()
+def eval(
+    cases_dir: str = typer.Option("evals/cases", help="Directorio de casos .yaml."),
+    out: str = typer.Option("output/evals", help="Directorio de salida."),
+) -> None:
+    """Corre la batería de evaluaciones (offline, determinista)."""
+    from .evals import run_all
+
+    results = run_all(cases_dir, out)
+    if not results:
+        console.print(f"[yellow]No se encontraron casos en {cases_dir}.[/yellow]")
+        raise typer.Exit(code=1)
+
+    table = Table(title="Evaluaciones", border_style="blue")
+    table.add_column("Caso", style="bold")
+    table.add_column("Checks")
+    table.add_column("Estado")
+    total_ok = 0
+    for r in results:
+        ok = sum(c.ok for c in r.checks)
+        passed = r.passed
+        total_ok += passed
+        estado = "[green]PASS[/green]" if passed else "[red]FAIL[/red]"
+        table.add_row(r.case, f"{ok}/{len(r.checks)}", estado)
+    console.print(table)
+
+    for r in results:
+        if not r.passed:
+            console.print(f"[red]FAIL {r.case}[/red]:")
+            for c in r.checks:
+                if not c.ok:
+                    console.print(f"    ✗ {c.name} — {c.detail}")
+
+    console.print(f"\n[bold]{total_ok}/{len(results)} casos aprobados.[/bold]")
+    if total_ok < len(results):
+        raise typer.Exit(code=1)
 
 
 @app.command()

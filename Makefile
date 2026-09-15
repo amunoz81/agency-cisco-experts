@@ -7,6 +7,7 @@ help:
 	@echo "  make demo         Ejecuta la agencia en modo OFFLINE con la oportunidad Fanalca"
 	@echo "  make run          Ejecuta la agencia (usa .env; requiere API key)"
 	@echo "  make test         Corre la batería de pruebas"
+	@echo "  make eval         Corre las evaluaciones (dataset dorado, offline)"
 	@echo "  make lint         Ruff + mypy"
 	@echo "  make fmt          Formatea con ruff"
 	@echo "  make clean        Limpia artefactos generados"
@@ -26,6 +27,9 @@ run:
 
 test:
 	pytest -q
+
+eval:
+	python -m cisco_agency.run eval
 
 lint:
 	ruff check src tests

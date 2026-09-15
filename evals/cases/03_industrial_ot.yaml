@@ -1,0 +1,24 @@
+name: industrial_ot
+description: "Planta industrial: IT/OT necesaria por presencia de plantas."
+opportunity:
+  customer: "Cementos del Valle"
+  industry: "Cemento"
+  objectives:
+    - "Visibilidad de activos industriales"
+    - "Segmentación IT/OT sin downtime"
+  sites:
+    - { name: "Planta Norte", kind: "planta", users: 200 }
+    - { name: "Planta Sur", kind: "planta", users: 180 }
+    - { name: "Oficina", kind: "campus", users: 120 }
+  workloads: ["SCADA", "historian"]
+  horizon_years: 4
+  it_ot_present: true
+  needs_correlation_soc: false
+  needs_collaboration: false
+expect:
+  specialists_include: [secure_networking, security, it_ot]
+  min_findings: 3
+  no_duplicate_bom: true
+  review_passes: true
+  min_verified_evidence: 3
+  proposal_generated: true

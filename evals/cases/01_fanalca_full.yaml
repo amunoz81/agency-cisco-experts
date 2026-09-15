@@ -1,0 +1,26 @@
+name: fanalca_full
+description: "Escenario completo con OT, SOC y Colaboración."
+opportunity:
+  customer: "Fanalca"
+  industry: "Manufactura"
+  objectives:
+    - "Zero Trust de extremo a extremo"
+    - "Visibilidad OT sin afectar producción"
+    - "Correlación y respuesta centralizada"
+    - "Colaboración híbrida segura"
+  sites:
+    - { name: "HQ", kind: "campus", users: 800 }
+    - { name: "Planta", kind: "planta", users: 350 }
+  workloads: ["ERP", "SIEM/SOC con Splunk", "Webex"]
+  horizon_years: 3
+  it_ot_present: true
+  needs_correlation_soc: true
+  needs_collaboration: true
+expect:
+  specialists_include: [secure_networking, security, it_ot, observability_soc, collaboration]
+  min_findings: 5
+  min_bom_lines: 10
+  no_duplicate_bom: true
+  review_passes: true
+  min_verified_evidence: 3
+  proposal_generated: true

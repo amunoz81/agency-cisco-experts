@@ -135,6 +135,18 @@ Si se rechaza, el grafo va directo a `END` sin generar propuesta. Para una UI
 asíncrona, sustituye el approver por `langgraph.interrupt` manteniendo el mismo
 contrato (`approve_scope`).
 
+## Evaluación y observabilidad
+
+- **Evals** (`evals.py` + `evals/cases/*.yaml`): corren el pipeline offline sobre
+  un dataset dorado y verifican propiedades estructurales (alcance, BOM sin
+  duplicados, cobertura de evidencia, revisión aprobada, propuesta generada).
+  `cisco-agency eval` / `make eval`; también en `tests/test_evals.py` y CI.
+- **Métricas de corrida** (`metrics.py`): cada `run` escribe un `run_report_*.json`
+  (duración, arquitecturas, BOM, evidencia verificada/cobertura, revisiones) y
+  muestra una tabla de métricas. Es observabilidad sin dependencias.
+- **Trazas profundas**: exporta `LANGCHAIN_TRACING_V2=true` y `LANGSMITH_API_KEY`
+  para enviar trazas por nodo, tokens y latencia a LangSmith (ver `.env.example`).
+
 ## Extender el grafo
 
 Para ejecutar especialistas en **paralelo**, el reducer `operator.add` sobre

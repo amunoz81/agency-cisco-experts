@@ -135,9 +135,14 @@ Ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ```bash
 make test     # pruebas
+make eval     # evaluaciones (dataset dorado, offline)
 make lint     # ruff + mypy
 make fmt      # formateo
 ```
+
+Cada corrida escribe un `run_report_*.json` con métricas (duración, BOM, cobertura
+de evidencia, revisiones). Para trazas por nodo/tokens/latencia, activa LangSmith
+en `.env` (ver `.env.example`).
 
 ## Contribuir
 

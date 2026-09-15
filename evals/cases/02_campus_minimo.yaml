@@ -1,0 +1,25 @@
+name: campus_minimo
+description: "Campus sin OT ni SOC: Secure Networking + Security necesarias; el resto opcional."
+opportunity:
+  customer: "Retail Andino"
+  industry: "Retail"
+  objectives:
+    - "Acceso seguro por identidad en tiendas"
+    - "Segmentación básica"
+  sites:
+    - { name: "Sede", kind: "campus", users: 300 }
+    - { name: "Tienda 1", kind: "sucursal", users: 40 }
+  workloads: ["POS", "correo"]
+  horizon_years: 3
+  it_ot_present: false
+  needs_correlation_soc: false
+  needs_collaboration: false
+expect:
+  specialists_include: [secure_networking, security]
+  # IT/OT debe quedar fuera de alcance (no hay plantas).
+  specialists_exclude: [it_ot]
+  min_findings: 2
+  no_duplicate_bom: true
+  review_passes: true
+  min_verified_evidence: 2
+  proposal_generated: true
