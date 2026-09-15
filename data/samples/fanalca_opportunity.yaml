@@ -1,0 +1,34 @@
+# Oportunidad de ejemplo (datos ilustrativos, NO reales) para demostrar la agencia.
+# Reemplazar con la ficha real del descubrimiento del cliente.
+customer: "Fanalca"
+industry: "Manufactura / Movilidad"
+objectives:
+  - "Modernizar la red de campus y sucursales con acceso seguro por identidad"
+  - "Implementar Zero Trust de extremo a extremo alineado a NIST/CISA"
+  - "Dar visibilidad y control a los entornos industriales (OT) sin afectar producción"
+  - "Habilitar correlación y respuesta centralizada (SOC)"
+sites:
+  - { name: "Sede Cali (HQ)", kind: "campus", users: 800 }
+  - { name: "Planta Yumbo", kind: "planta", users: 350 }
+  - { name: "Sucursal Bogotá", kind: "sucursal", users: 200 }
+  - { name: "Datacenter Principal", kind: "datacenter", users: 0 }
+workloads:
+  - "ERP y aplicaciones de manufactura on-prem"
+  - "Correlación de eventos y respuesta a incidentes (SIEM/SOC con Splunk)"
+  - "Analítica industrial"
+inventory:
+  - "Switching de acceso heterogéneo (marcas mixtas, versiones por confirmar)"
+  - "Firewall perimetral legacy"
+constraints:
+  - "Ventanas de mantenimiento limitadas en planta (producción 24/7 parcial)"
+  - "Cumplimiento y retención de logs por normativa local"
+budget: "Por confirmar con el equipo comercial"
+horizon_years: 3
+it_ot_present: true
+needs_correlation_soc: true
+needs_datacenter_ai: false
+pending_data:
+  - "Inventario detallado con modelos y versiones de SW"
+  - "Topología actual y diagramas de red OT"
+  - "Volumen de ingesta estimado para Splunk (GB/día)"
+  - "Número exacto de endpoints y usuarios concurrentes"

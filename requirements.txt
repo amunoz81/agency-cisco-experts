@@ -1,0 +1,19 @@
+# Instalación mínima: pip install -r requirements.txt
+# (equivalente a las dependencias base de pyproject.toml)
+langgraph>=0.2.60
+langchain>=0.3.13
+langchain-core>=0.3.28
+langchain-anthropic>=0.3.0
+langchain-openai>=0.2.14
+pydantic>=2.9
+pydantic-settings>=2.6
+python-dotenv>=1.0
+PyYAML>=6.0
+Jinja2>=3.1
+rich>=13.9
+typer>=0.15
+# Motor PDF pure-Python (sin libs de sistema): fallback por defecto.
+xhtml2pdf>=0.2.16
+
+# PDF de máxima fidelidad (opcional; requiere libs de sistema pango/cairo):
+# weasyprint>=63.0

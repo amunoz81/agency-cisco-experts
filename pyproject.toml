@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cisco-agency"
+version = "0.1.0"
+description = "Agencia agéntica de expertos Cisco para propuestas técnicas y comerciales (LangGraph + LangChain)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+authors = [{ name = "amunoz81" }]
+
+dependencies = [
+    "langgraph>=0.2.60",
+    "langchain>=0.3.13",
+    "langchain-core>=0.3.28",
+    "langchain-anthropic>=0.3.0",
+    "langchain-openai>=0.2.14",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "python-dotenv>=1.0",
+    "PyYAML>=6.0",
+    "Jinja2>=3.1",
+    "rich>=13.9",
+    "typer>=0.15",
+    # Motor PDF pure-Python (sin libs de sistema). Fallback por defecto.
+    "xhtml2pdf>=0.2.16",
+]
+
+[project.optional-dependencies]
+pdf = [
+    # WeasyPrint da mayor fidelidad pero requiere libs de sistema (pango/cairo).
+    # Ver docs/ARCHITECTURE.md. Opcional: el motor pure-Python ya viene en base.
+    "weasyprint>=63.0",
+]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+    "mypy>=1.13",
+]
+
+[project.scripts]
+cisco-agency = "cisco_agency.run:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+# B008: patrón idiomático de Typer (typer.Argument/Option en defaults).
+# UP042: usamos (str, Enum) a propósito por claridad e interoperabilidad con Pydantic.
+ignore = ["B008", "UP042"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

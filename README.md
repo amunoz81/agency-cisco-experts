@@ -1,0 +1,135 @@
+# Cisco Experts Agency 🛰️
+
+Agencia **agéntica** de expertos Cisco que produce **propuestas técnicas y
+comerciales** (HTML/PDF) para audiencias técnicas y ejecutivas C-Level, cubriendo
+todo el portafolio: **Secure Networking, Security, Data Center & AI, Colaboración
+y Observabilidad (Splunk)**.
+
+Construida con **LangGraph + LangChain** (open source), multi-proveedor de LLM
+(Anthropic · OpenAI · Azure OpenAI) y con un **modo offline** para correr demos
+y CI sin credenciales.
+
+> ⚠️ Este repositorio es **privado**. Contenido base para revisión humana antes
+> de entregarse a un cliente. No incorpora precios reales ni logotipos de terceros:
+> el año fiscal, los productos disponibles y las condiciones comerciales se
+> consultan por oportunidad con información autorizada.
+
+---
+
+## ¿Qué hace?
+
+A partir de una **ficha de oportunidad** (YAML/JSON), la agencia:
+
+1. **Descubre** y normaliza la oportunidad del cliente.
+2. El **coordinador** define el alcance y selecciona especialistas.
+3. Cada **especialista** entrega su análisis en un **formato común**.
+4. Se **integra** el diseño, se consolida el **BOM**, se calcula el **caso financiero**.
+5. Un **revisor técnico independiente** valida coherencia, cantidades y licencias.
+6. Se genera la **propuesta ejecutiva** (STAR, blueprint, casos de uso, hoja de
+   ruta, métricas y anexos) en **HTML y PDF**.
+
+## Arranque rápido
+
+```bash
+# 1. Instalar (crea .venv e instala dependencias)
+make install
+
+# 2. Ejecutar la DEMO en modo offline (sin API keys) sobre la oportunidad Fanalca
+make demo
+
+# 3. Ver el resultado
+open output/propuesta_fanalca.pdf     # o el .html
+```
+
+Para usar un LLM real:
+
+```bash
+cp .env.example .env      # completa LLM_PROVIDER y la API key correspondiente
+make run
+```
+
+## Roles de la agencia
+
+| Rol | Responsabilidad |
+|-----|-----------------|
+| **Arquitecto coordinador** | Entiende el negocio, define alcance, selecciona especialistas, resuelve contradicciones y entrega una sola oferta. |
+| **Secure Networking** | Conectividad segura, acceso e identidad, segmentación (Meraki, Catalyst, ISE, DUO, Secure Access, Secure Firewall, AgenticOps). |
+| **Security** | Ciberseguridad end-to-end alineada a NIST/CISA: Zero Trust, Secure Workload, Isovalent, Hypershield, NDR/EDR. |
+| **Especialista IT/OT** | Zonas industriales, comunicaciones permitidas, visibilidad con Cyber Vision, sin afectar producción. |
+| **Observabilidad y SOC** | Splunk, ThousandEyes: correlación cross-domain, experiencia digital y respuesta. |
+| **Data Center y AI** | Cómputo, red de DC, virtualización y AI Fabric (AI PODs con GPU). |
+| **Revisor técnico independiente** | Compatibilidad, dimensionamiento, dependencias, licencias y coherencia. |
+
+Ver [docs/AGENTS.md](docs/AGENTS.md).
+
+## Skills
+
+Descubrimiento del cliente · Diseño Secure Networking · Diseño de ciberseguridad ·
+Verificación de portafolio y compatibilidad · Integración entre arquitecturas ·
+BOM y licenciamiento · Caso financiero · Propuesta ejecutiva.
+
+Ver [docs/SKILLS.md](docs/SKILLS.md).
+
+## Formato común de los especialistas
+
+Cada especialista devuelve un `SpecialistFinding`:
+
+```
+Necesidad → solución → dependencias → dimensionamiento → licencias →
+beneficio medible → evidencia → riesgos y pendientes
+```
+
+Cada conclusión relevante lleva **fuente, fecha, versión y estado**
+(`verificada` / `condicionada` / `pendiente`).
+
+## Estructura del repositorio
+
+```
+src/cisco_agency/
+├── config.py         # Ajustes (.env), selección de proveedor y modo offline
+├── llm.py            # Fábrica multi-proveedor (Anthropic/OpenAI/Azure)
+├── schemas.py        # Formato común, evidencia, BOM, oportunidad, finanzas
+├── state.py          # Estado del grafo LangGraph
+├── graph.py          # Pipeline: discovery→planning→specialists→…→proposal
+├── run.py            # CLI (typer)
+├── agents/           # Coordinador, especialistas, revisor técnico
+├── skills/           # Descubrimiento, integración, BOM, caso financiero, verificación
+├── prompts/          # Prompts de sistema (uno por agente)
+├── finance/          # Cálculos reproducibles (NPV, ROI, payback, TCO)
+├── reporting/        # Plantilla Jinja2 + generación HTML/PDF + paleta
+└── knowledge/        # Base de evidencia (placeholder para docs oficiales)
+```
+
+## Arquitectura del flujo
+
+```mermaid
+flowchart LR
+  A[Descubrimiento] --> B[Coordinador: alcance]
+  B --> C[Especialistas]
+  C --> D[Integración]
+  D --> E[BOM y licencias]
+  E --> F[Caso financiero]
+  F --> G[Revisión técnica]
+  G --> H[Propuesta HTML/PDF]
+```
+
+Ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Desarrollo
+
+```bash
+make test     # pruebas
+make lint     # ruff + mypy
+make fmt      # formateo
+```
+
+## Contribuir
+
+Lee [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md). Para añadir un especialista o una
+skill nueva hay guías paso a paso.
+
+## Aviso
+
+Documento y diseños generados automáticamente como **base**. Requieren revisión de
+un arquitecto humano y validación contra matrices de compatibilidad, notas de
+versión y ciclo de vida oficiales antes de cotizar o entregar.

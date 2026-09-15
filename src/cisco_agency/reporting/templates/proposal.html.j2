@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Propuesta {{ opportunity.customer }}</title>
+<style>
+  @page { size: A4; margin: 20mm 16mm; }
+  :root {
+    --primary: {{ palette.primary }};
+    --secondary: {{ palette.secondary }};
+    --accent: {{ palette.accent }};
+    --ink: {{ palette.ink }};
+    --muted: {{ palette.muted }};
+    --line: {{ palette.line }};
+    --bg-soft: {{ palette.bg_soft }};
+    --ok: {{ palette.ok }};
+    --warn: {{ palette.warn }};
+    --blocker: {{ palette.blocker }};
+  }
+  * { box-sizing: border-box; }
+  body { font-family: "Helvetica Neue", Arial, sans-serif; color: var(--ink);
+         font-size: 12px; line-height: 1.5; margin: 0; }
+  h1,h2,h3 { color: var(--primary); margin: 0 0 8px; }
+  h1 { font-size: 26px; }
+  h2 { font-size: 18px; border-bottom: 2px solid var(--accent); padding-bottom: 4px; margin-top: 26px; }
+  h3 { font-size: 14px; color: var(--secondary); margin-top: 16px; }
+  p { margin: 0 0 8px; }
+  .muted { color: var(--muted); }
+  .cover { background: var(--primary); color: #fff; padding: 40px 32px; border-radius: 8px; }
+  .cover h1 { color: #fff; }
+  .cover .sub { color: var(--accent); font-size: 15px; letter-spacing: .5px; text-transform: uppercase; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px;
+           font-weight: 700; text-transform: uppercase; }
+  .b-nec { background: #e6f4ea; color: var(--ok); }
+  .b-opt { background: #fbf0dd; color: var(--warn); }
+  .b-out { background: #eef1f4; color: var(--muted); }
+  .b-ver { background: #e6f4ea; color: var(--ok); }
+  .b-cond { background: #fbf0dd; color: var(--warn); }
+  .b-pend { background: #fdeceb; color: var(--blocker); }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--bg-soft); color: var(--primary); font-size: 11px; text-transform: uppercase; }
+  .card { background: var(--bg-soft); border-left: 4px solid var(--secondary);
+          padding: 12px 14px; border-radius: 4px; margin: 8px 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .kpi { text-align: center; background: var(--bg-soft); border-radius: 6px; padding: 12px; }
+  .kpi .n { font-size: 22px; font-weight: 700; color: var(--primary); }
+  .kpi .l { font-size: 10px; color: var(--muted); text-transform: uppercase; }
+  ul { margin: 4px 0 8px 18px; padding: 0; }
+  .pagebreak { page-break-before: always; }
+  .footer { color: var(--muted); font-size: 10px; margin-top: 30px; border-top: 1px solid var(--line); padding-top: 8px; }
+  .star td:first-child { font-weight: 700; color: var(--secondary); width: 130px; }
+</style>
+</head>
+<body>
+
+<!-- PORTADA -->
+<div class="cover">
+  <div class="sub">Propuesta técnica y comercial</div>
+  <h1>{{ opportunity.customer }}</h1>
+  <p style="margin-top:12px;">Arquitectura Cisco de extremo a extremo · {{ fiscal_year }}</p>
+  <p class="muted" style="color:#cfe6f5;">Generado por la Agencia de Expertos Cisco · {{ generated_at }}</p>
+</div>
+
+<!-- RESUMEN EJECUTIVO / STAR -->
+<h2>1. Resumen ejecutivo (STAR)</h2>
+<table class="star">
+  <tr><td>Situación</td><td>{{ star.situation }}</td></tr>
+  <tr><td>Tarea</td><td>{{ star.task }}</td></tr>
+  <tr><td>Acción</td><td>{{ star.action }}</td></tr>
+  <tr><td>Resultado</td><td>{{ star.result }}</td></tr>
+</table>
+
+<div class="grid2">
+  {% for k in kpis %}
+  <div class="kpi"><div class="n">{{ k.value }}</div><div class="l">{{ k.label }}</div></div>
+  {% endfor %}
+</div>
+
+<!-- ALCANCE -->
+<h2>2. Alcance de la solución</h2>
+<table>
+  <tr><th>Arquitectura</th><th>Clasificación</th></tr>
+  {% for arch, cls in scope_plan.items() %}
+  <tr>
+    <td>{{ arch_labels.get(arch, arch) }}</td>
+    <td>
+      {% if cls == 'necesaria' %}<span class="badge b-nec">Necesaria</span>
+      {% elif cls == 'opcional_justificada' %}<span class="badge b-opt">Opcional justificada</span>
+      {% else %}<span class="badge b-out">Fuera de alcance</span>{% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<!-- BLUEPRINT / ESPECIALISTAS -->
+<h2 class="pagebreak">3. Blueprint por arquitectura</h2>
+{% for f in findings %}
+<h3>{{ arch_labels.get(f.architecture.value, f.architecture.value) }}
+  {% if f.scope.value == 'necesaria' %}<span class="badge b-nec">Necesaria</span>
+  {% elif f.scope.value == 'opcional_justificada' %}<span class="badge b-opt">Opcional</span>{% endif %}
+</h3>
+<div class="card">
+  <p><strong>Necesidad:</strong> {{ f.customer_need }}</p>
+  <p><strong>Solución propuesta:</strong> {{ f.proposed_solution }}</p>
+  {% if f.dependencies %}<p><strong>Dependencias:</strong> {{ f.dependencies | join('; ') }}</p>{% endif %}
+  <p><strong>Dimensionamiento:</strong> {{ f.sizing }}</p>
+  {% if f.licenses %}<p><strong>Licencias:</strong> {{ f.licenses | join('; ') }}</p>{% endif %}
+  <p><strong>Beneficio medible:</strong> {{ f.measurable_benefit }}</p>
+  {% if f.risks_pending %}<p><strong>Riesgos y pendientes:</strong> {{ f.risks_pending | join('; ') }}</p>{% endif %}
+  {% if f.evidence %}
+  <p><strong>Evidencia:</strong></p>
+  <ul>
+    {% for e in f.evidence %}
+    <li>{{ e.claim }} — <em>{{ e.source }}</em>{% if e.version %} ({{ e.version }}){% endif %}
+      {% if e.status.value == 'verificada' %}<span class="badge b-ver">Verificada</span>
+      {% elif e.status.value == 'condicionada' %}<span class="badge b-cond">Condicionada</span>
+      {% else %}<span class="badge b-pend">Pendiente</span>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+{% endfor %}
+
+<!-- INTEGRACIÓN -->
+<h2>4. Integración entre arquitecturas</h2>
+{% if integration.data_flows %}
+<h3>Flujos de datos</h3><ul>{% for x in integration.data_flows %}<li>{{ x }}</li>{% endfor %}</ul>
+{% endif %}
+{% if integration.policy_enforcement_points %}
+<h3>Puntos de aplicación de política</h3><ul>{% for x in integration.policy_enforcement_points %}<li>{{ x }}</li>{% endfor %}</ul>
+{% endif %}
+<h3>Responsabilidades operativas</h3>
+<ul>{% for x in integration.operational_responsibilities %}<li>{{ x }}</li>{% endfor %}</ul>
+
+<!-- CASOS DE USO -->
+<h2>5. Casos de uso</h2>
+<ul>{% for uc in use_cases %}<li>{{ uc }}</li>{% endfor %}</ul>
+
+<!-- HOJA DE RUTA -->
+<h2>6. Hoja de ruta</h2>
+<table>
+  <tr><th>Fase</th><th>Foco</th><th>Duración</th></tr>
+  {% for ph in roadmap %}
+  <tr><td>{{ ph.phase }}</td><td>{{ ph.focus }}</td><td>{{ ph.duration }}</td></tr>
+  {% endfor %}
+</table>
+
+<!-- BOM -->
+<h2 class="pagebreak">7. BOM y licenciamiento (consolidado)</h2>
+<table>
+  <tr><th>SKU</th><th>Descripción</th><th>Cant.</th><th>Arquitectura</th><th>Tipo</th><th>Gestión</th></tr>
+  {% for line in bom.lines %}
+  <tr>
+    <td>{{ line.sku or '—' }}</td>
+    <td>{{ line.description }}</td>
+    <td>{{ line.quantity | round(0, 'floor') | int }} {{ line.unit }}</td>
+    <td>{{ arch_labels.get(line.architecture.value, line.architecture.value) }}</td>
+    <td>{{ 'Licencia' if line.is_license else 'Hardware' }}</td>
+    <td>{{ line.management or '—' }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<p class="muted">Cantidades de ejemplo para dimensionamiento inicial. Los SKU y precios
+finales se confirman con cotización autorizada del año fiscal vigente.</p>
+
+<!-- CASO FINANCIERO -->
+<h2>8. Caso financiero</h2>
+<table>
+  <tr><th>Escenario</th><th>CAPEX</th><th>OPEX/año</th><th>TCO ({{ opportunity.horizon_years }}a)</th>
+      <th>ROI</th><th>NPV</th><th>Payback</th></tr>
+  {% for name, r in financial_case.results.items() %}
+  <tr>
+    <td>{{ name }}</td>
+    <td>{{ "{:,.0f}".format(financial_scenarios[name].capex) }}</td>
+    <td>{{ "{:,.0f}".format(financial_scenarios[name].annual_opex) }}</td>
+    <td>{{ "{:,.0f}".format(r.tco) }}</td>
+    <td>{{ "{:.1%}".format(r.roi) }}</td>
+    <td>{{ "{:,.0f}".format(r.npv) }}</td>
+    <td>{% if r.payback_years >= 0 %}{{ r.payback_years }} años{% else %}> horizonte{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+<p class="muted">Moneda: {{ financial_case.currency }}. Supuestos:</p>
+<ul>{% for a in financial_case.assumptions %}<li class="muted">{{ a }}</li>{% endfor %}</ul>
+
+<!-- REVISIÓN -->
+<h2>9. Revisión técnica independiente</h2>
+<p>Estado: {% if review.passed %}<span class="badge b-ver">Aprobada (sin bloqueantes)</span>
+{% else %}<span class="badge b-pend">Con bloqueantes</span>{% endif %}</p>
+{% if review.issues %}
+<table>
+  <tr><th>Severidad</th><th>Categoría</th><th>Detalle</th></tr>
+  {% for i in review.issues %}
+  <tr><td>{{ i.severity }}</td><td>{{ i.category }}</td><td>{{ i.detail }}</td></tr>
+  {% endfor %}
+</table>
+{% else %}<p class="muted">Sin observaciones.</p>{% endif %}
+
+<!-- MÉTRICAS Y ANEXOS -->
+<h2>10. Métricas de éxito y pendientes</h2>
+<h3>Verificación de portafolio</h3>
+<p>Evidencia verificada: {{ verification.verified }} · condicionada: {{ verification.conditioned }}
+   · pendiente: {{ verification.pending }} (cobertura {{ "{:.0%}".format(verification.coverage_ratio) }}).</p>
+{% if opportunity.pending_data %}
+<h3>Datos pendientes del cliente</h3>
+<ul>{% for d in opportunity.pending_data %}<li>{{ d }}</li>{% endfor %}</ul>
+{% endif %}
+
+<div class="footer">
+  Documento generado automáticamente por la Agencia de Expertos Cisco (v{{ version }}).
+  Contenido base para revisión humana antes de su entrega. {{ generated_at }}.
+</div>
+
+</body>
+</html>
