@@ -29,5 +29,11 @@ Clasifica el resultado como **necesaria**, **opcional con justificación** o
 - Convoca Data Center y AI cuando las cargas requieran infraestructura local o
   plataformas de IA con GPU.
 
+## Síntesis ejecutiva (STAR)
+Cuando integres los hallazgos, entrega una narrativa de negocio en formato STAR
+(Situación, Tarea, Acción, Resultado), un resumen ejecutivo breve y la lista de
+**contradicciones resueltas** entre especialistas (si las hubo). Habla a una
+audiencia C-Level: valor de negocio y riesgo, no solo tecnología.
+
 Nunca inventes precios ni disponibilidad: se consultan por oportunidad con
 información comercial autorizada del año fiscal vigente.

@@ -76,23 +76,36 @@ def _route_after_gate(state: AgencyState) -> str:
     return "specialists" if state.get("scope_approved", True) else END
 
 
+MAX_REVISIONS = 1
+
+
 def _make_specialists(settings: Settings, router: ModelRouter, kb: KnowledgeBase):
     def _node_specialists(state: AgencyState) -> AgencyState:
         opportunity = state["opportunity"]
         selected = state.get("selected_specialists", [])
+        feedback = state.get("review_feedback", "")
+        targets = set(state.get("critique").revision_targets) if state.get("critique") else set()
+        prev = {f.architecture.value: f for f in state.get("findings", [])}
+        revising = bool(feedback)
+
         findings = []
         log = []
         for name in selected:
             agent_cls = SPECIALIST_REGISTRY.get(name)
             if not agent_cls:
                 continue
+            # En una revisión, solo se rehacen las arquitecturas objetivo.
+            if revising and targets and name not in targets and name in prev:
+                findings.append(prev[name])
+                continue
             agent = agent_cls(settings, router, kb)
-            finding = agent.analyze(opportunity)
+            finding = agent.analyze(opportunity, feedback=feedback or None)
             cfg = router.resolve(name)
             engine = "offline" if router.is_offline(name) else f"{cfg.provider}/{cfg.model}"
             findings.append(finding)
+            tag = " (revisión)" if revising else ""
             log.append(
-                f"Especialista {name} · motor {engine} · "
+                f"Especialista {name} · motor {engine}{tag} · "
                 f"hallazgo generado ({finding.scope.value})."
             )
         return {"findings": findings, "log": log}
@@ -118,17 +131,66 @@ def _make_finance(settings: Settings):
     return _node_finance
 
 
-def _node_review(state: AgencyState) -> AgencyState:
-    reviewer = TechnicalReviewer()
-    review = reviewer.review(
-        state.get("findings", []), state["bom"], state["financial_case"]
-    )
-    n = len(review.issues)
-    return {
-        "review": review,
-        "log": [f"Revisión técnica: {'aprobada' if review.passed else 'con bloqueantes'} "
-                f"({n} observación/es)."],
-    }
+def _make_review(settings: Settings, router: ModelRouter):
+    def _node_review(state: AgencyState) -> AgencyState:
+        reviewer = TechnicalReviewer(settings, router)
+        review = reviewer.review(
+            state.get("findings", []), state["bom"], state["financial_case"]
+        )
+        n = len(review.issues)
+        return {
+            "review": review,
+            "log": [f"Revisión técnica: {'aprobada' if review.passed else 'con bloqueantes'} "
+                    f"({n} observación/es)."],
+        }
+
+    return _node_review
+
+
+def _make_critic(settings: Settings, router: ModelRouter):
+    """Crítico cualitativo + decisión de reflexión acotada."""
+
+    def _node_critic(state: AgencyState) -> AgencyState:
+        reviewer = TechnicalReviewer(settings, router)
+        critique = reviewer.critique(
+            state.get("findings", []), state.get("integration", {}), state["review"]
+        )
+        count = state.get("revision_count", 0)
+        should_revise = critique.revision_requested and count < MAX_REVISIONS
+        out: AgencyState = {"critique": critique, "should_revise": should_revise}
+        if should_revise:
+            out["revision_count"] = count + 1
+            out["review_feedback"] = critique.rationale + " " + "; ".join(critique.issues)
+            out["log"] = [
+                f"Crítico: solicita revisión #{count + 1} "
+                f"→ {', '.join(critique.revision_targets) or 'todas'}."
+            ]
+        else:
+            reason = "sin observaciones cualitativas" if not critique.revision_requested \
+                else f"límite de revisiones ({MAX_REVISIONS}) alcanzado"
+            out["log"] = [f"Crítico: diseño aceptado ({reason})."]
+        return out
+
+    return _node_critic
+
+
+def _route_after_critic(state: AgencyState) -> str:
+    return "specialists" if state.get("should_revise") else "synthesis"
+
+
+def _make_synthesis(settings: Settings, router: ModelRouter):
+    def _node_synthesis(state: AgencyState) -> AgencyState:
+        coordinator = Coordinator(settings, router)
+        synthesis = coordinator.synthesize(
+            state["opportunity"], state.get("findings", []), state.get("integration", {})
+        )
+        engine = "offline" if router.is_offline("coordinator") else "LLM"
+        return {
+            "synthesis": synthesis,
+            "log": [f"Coordinador · síntesis ejecutiva ({engine}) integrada."],
+        }
+
+    return _node_synthesis
 
 
 def _make_proposal(settings: Settings, out_dir: str):
@@ -145,6 +207,8 @@ def _make_proposal(settings: Settings, out_dir: str):
             verification=verification,
             fiscal_year=settings.fiscal_year,
             out_dir=out_dir,
+            synthesis=state.get("synthesis"),
+            critique=state.get("critique"),
         )
         return {"proposal": result, "log": [f"Propuesta generada: {result['html']}"]}
 
@@ -175,7 +239,9 @@ def build_graph(
     g.add_node("integration", _node_integration)
     g.add_node("bom", _node_bom)
     g.add_node("finance", _make_finance(settings))
-    g.add_node("review", _node_review)
+    g.add_node("review", _make_review(settings, router))
+    g.add_node("critic", _make_critic(settings, router))
+    g.add_node("synthesis", _make_synthesis(settings, router))
     g.add_node("proposal", _make_proposal(settings, out_dir))
 
     g.add_edge(START, "discovery")
@@ -186,7 +252,10 @@ def build_graph(
     g.add_edge("integration", "bom")
     g.add_edge("bom", "finance")
     g.add_edge("finance", "review")
-    g.add_edge("review", "proposal")
+    g.add_edge("review", "critic")
+    # Reflexión acotada: el crítico puede devolver el diseño a los especialistas.
+    g.add_conditional_edges("critic", _route_after_critic, ["specialists", "synthesis"])
+    g.add_edge("synthesis", "proposal")
     g.add_edge("proposal", END)
 
     return g.compile()

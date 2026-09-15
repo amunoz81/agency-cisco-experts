@@ -179,3 +179,28 @@ class ReviewIssue(BaseModel):
 class ReviewResult(BaseModel):
     passed: bool = True
     issues: list[ReviewIssue] = Field(default_factory=list)
+
+
+# --------------------------------------------------------------------------
+# Capa LLM híbrida: síntesis del coordinador y crítica del revisor
+# --------------------------------------------------------------------------
+class ExecutiveSynthesis(BaseModel):
+    """Narrativa de negocio integrada del coordinador (STAR + resolución)."""
+
+    situation: str = ""
+    task: str = ""
+    action: str = ""
+    result: str = ""
+    contradictions_resolved: list[str] = Field(default_factory=list)
+    executive_summary: str = ""
+
+
+class CritiqueResult(BaseModel):
+    """Juicio cualitativo del crítico (revisor) sobre coherencia del diseño."""
+
+    revision_requested: bool = False
+    rationale: str = ""
+    issues: list[str] = Field(default_factory=list)
+    revision_targets: list[str] = Field(
+        default_factory=list, description="Arquitecturas a revisar (valores de Architecture)."
+    )

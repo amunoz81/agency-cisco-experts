@@ -18,6 +18,9 @@ Reglas base: Secure Networking y Security siempre necesarias; IT/OT si hay
 plantas; Observabilidad/SOC si hay correlación; Data Center/AI si hay cargas que
 lo requieran.
 
+Además, `Coordinator.synthesize()` produce la **síntesis ejecutiva** (STAR,
+resumen y contradicciones resueltas): determinista en offline, LLM en línea.
+
 ## Especialistas
 
 Todos heredan de `SpecialistAgent` (`base.py`) y devuelven un `SpecialistFinding`.
@@ -43,6 +46,10 @@ Comprobaciones deterministas y auditables:
 
 Clasifica hallazgos como `info`, `warning`, `blocker`. Una oferta con
 `blocker` no se considera cerrada.
+
+`TechnicalReviewer.critique()` añade el **crítico cualitativo** (capa LLM): puede
+solicitar una revisión acotada (`MAX_REVISIONS`) devolviendo el diseño a las
+arquitecturas objetivo. Las verificaciones deterministas nunca se reemplazan.
 
 ## Añadir un especialista nuevo
 

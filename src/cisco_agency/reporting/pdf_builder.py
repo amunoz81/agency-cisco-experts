@@ -15,6 +15,8 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from .. import __version__
 from ..schemas import (
     Bom,
+    CritiqueResult,
+    ExecutiveSynthesis,
     FinancialCase,
     Opportunity,
     ReviewResult,
@@ -113,6 +115,8 @@ def build_proposal(
     fiscal_year: str,
     out_dir: str | Path,
     basename: str | None = None,
+    synthesis: ExecutiveSynthesis | None = None,
+    critique: CritiqueResult | None = None,
 ) -> dict:
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
@@ -130,6 +134,20 @@ def build_proposal(
     }
     financial_scenarios = {s.name: s for s in financial_case.scenarios}
 
+    if synthesis is not None:
+        star = {
+            "situation": synthesis.situation,
+            "task": synthesis.task,
+            "action": synthesis.action,
+            "result": synthesis.result,
+        }
+        executive_summary = synthesis.executive_summary
+        contradictions = synthesis.contradictions_resolved
+    else:
+        star = _build_star(opportunity)
+        executive_summary = ""
+        contradictions = []
+
     html = template.render(
         palette=PALETTE,
         version=__version__,
@@ -144,8 +162,11 @@ def build_proposal(
         financial_case=financial_case,
         financial_scenarios=financial_scenarios,
         review=review,
+        critique=critique,
         verification=verification,
-        star=_build_star(opportunity),
+        star=star,
+        executive_summary=executive_summary,
+        contradictions=contradictions,
         kpis=_build_kpis(bom, findings),
         use_cases=_default_use_cases(findings),
         roadmap=_default_roadmap(),

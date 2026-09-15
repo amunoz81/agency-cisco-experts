@@ -12,3 +12,10 @@ Los cálculos financieros se ejecutan con fórmulas reproducibles. Clasifica cad
 observación por severidad: `info`, `warning`, `blocker`. Una oferta con
 bloqueantes no puede cerrarse. No apruebes evidencia "pendiente" como si fuera
 "verificada".
+
+## Crítica cualitativa (loop de reflexión)
+Además de las verificaciones deterministas, evalúa la **coherencia cualitativa**
+del diseño integrado (dependencias reales entre capas, puntos de aplicación de
+política, contradicciones). Solo solicita revisión si aporta valor real e indica
+las **arquitecturas objetivo**. Sé conservador: la reflexión es acotada (una
+iteración), no un ciclo infinito.

@@ -10,19 +10,37 @@ función pura que recibe el estado y devuelve un delta.
 raw_input
    │
    ▼
-discovery ─► planning ─► specialists ─► integration ─► bom ─► finance ─► review ─► proposal
+discovery ─► planning ─► scope_gate ─(HITL)─► specialists ─► integration ─► bom
+   ─► finance ─► review ─► critic ─┬─(revisión acotada)─► specialists
+                                   └─► synthesis ─► proposal
 ```
 
 | Nodo | Skill / Agente | Entrada | Salida |
 |------|----------------|---------|--------|
 | `discovery` | `customer_discovery` | dict crudo | `Opportunity` |
 | `planning` | `Coordinator` | `Opportunity` | `scope_plan`, `selected_specialists` |
-| `specialists` | `SpecialistAgent`* | `Opportunity` | `findings[]` |
+| `scope_gate` | `Approver` (HITL) | `scope_plan` | alcance aprobado/editado |
+| `specialists` | `SpecialistAgent`* | `Opportunity` + grounding | `findings[]` |
 | `integration` | `integration` | `findings` | flujos, políticas, dependencias |
 | `bom` | `bom_licensing` | `findings` | `Bom` consolidado |
 | `finance` | `financial_case` | `Opportunity`, `Bom` | `FinancialCase` |
-| `review` | `TechnicalReviewer` | `findings`, `Bom`, `FinancialCase` | `ReviewResult` |
+| `review` | `TechnicalReviewer.review` | `findings`, `Bom`, `FinancialCase` | `ReviewResult` |
+| `critic` | `TechnicalReviewer.critique` | `findings`, `integration` | `CritiqueResult` + decisión de reflexión |
+| `synthesis` | `Coordinator.synthesize` | `findings`, `integration` | `ExecutiveSynthesis` (STAR) |
 | `proposal` | `executive_proposal` | todo | HTML + PDF |
+
+## Capa LLM híbrida (coordinador + revisor)
+
+El control de flujo y las verificaciones son deterministas; el **juicio** es LLM:
+
+- **Coordinador (`synthesize`)**: mantiene el ruteo determinista de alcance y
+  añade una síntesis LLM (narrativa STAR, resumen ejecutivo, contradicciones
+  resueltas). En offline produce una síntesis determinista.
+- **Revisor (`critique`)**: las verificaciones deterministas (`review`) son el
+  guardrail y **no** se reemplazan; encima, un crítico LLM evalúa coherencia
+  cualitativa y puede solicitar una **revisión acotada** (`MAX_REVISIONS`, por
+  defecto 1) devolviendo el diseño a las arquitecturas objetivo. En offline el
+  crítico no solicita revisión.
 
 ## Multi-proveedor de LLM
 

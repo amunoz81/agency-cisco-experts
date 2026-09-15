@@ -8,13 +8,29 @@ cuatro preguntas de valor.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from ..config import Settings, get_settings
-from ..schemas import Architecture, Opportunity, ScopeClassification
+from ..routing import ModelRouter
+from ..schemas import (
+    Architecture,
+    ExecutiveSynthesis,
+    Opportunity,
+    ScopeClassification,
+    SpecialistFinding,
+)
+
+PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
 
 
 class Coordinator:
-    def __init__(self, settings: Settings | None = None) -> None:
+    def __init__(
+        self,
+        settings: Settings | None = None,
+        router: ModelRouter | None = None,
+    ) -> None:
         self.settings = settings or get_settings()
+        self.router = router or ModelRouter(self.settings)
 
     def plan_scope(self, opportunity: Opportunity) -> dict[str, ScopeClassification]:
         """Clasifica cada arquitectura: necesaria | opcional | fuera de alcance.
@@ -64,3 +80,80 @@ class Coordinator:
             for arch, cls in plan.items()
             if cls in (ScopeClassification.NECESSARY, ScopeClassification.OPTIONAL)
         ]
+
+    # -- Síntesis ejecutiva (capa LLM híbrida) -----------------------------
+    def synthesize(
+        self,
+        opportunity: Opportunity,
+        findings: list[SpecialistFinding],
+        integration: dict,
+    ) -> ExecutiveSynthesis:
+        """Integra las recomendaciones en una narrativa de negocio (STAR) y
+        resuelve contradicciones. Determinista en offline; LLM en línea."""
+        if self.router.is_offline("coordinator"):
+            return self._offline_synthesis(opportunity, findings)
+        return self._llm_synthesis(opportunity, findings, integration)
+
+    def _offline_synthesis(
+        self, opportunity: Opportunity, findings: list[SpecialistFinding]
+    ) -> ExecutiveSynthesis:
+        objectives = "; ".join(opportunity.objectives) or "objetivos por confirmar"
+        archs = ", ".join(sorted({f.architecture.value for f in findings}))
+        return ExecutiveSynthesis(
+            situation=(
+                f"{opportunity.customer}"
+                + (f" ({opportunity.industry})" if opportunity.industry else "")
+                + f" opera {len(opportunity.sites)} sede(s) y requiere modernizar su "
+                "arquitectura de red y seguridad de extremo a extremo."
+            ),
+            task=f"Objetivos declarados: {objectives}.",
+            action=(
+                "El coordinador integró las arquitecturas necesarias "
+                f"({archs}) en un diseño único con identidad, segmentación y "
+                "observabilidad coherentes."
+            ),
+            result=(
+                "Arquitectura Zero Trust de extremo a extremo, BOM consolidado y caso "
+                "financiero con escenarios, lista para validación técnica y ejecutiva."
+            ),
+            contradictions_resolved=[],
+            executive_summary=(
+                f"Propuesta integral para {opportunity.customer} que combina {archs} "
+                "bajo una estrategia Zero Trust, con dependencias y responsabilidades "
+                "operativas explícitas."
+            ),
+        )
+
+    def _llm_synthesis(
+        self,
+        opportunity: Opportunity,
+        findings: list[SpecialistFinding],
+        integration: dict,
+    ) -> ExecutiveSynthesis:
+        from langchain_core.messages import HumanMessage, SystemMessage
+
+        model = self.router.for_role("coordinator")
+        structured = model.with_structured_output(ExecutiveSynthesis)
+        system = self._prompt("coordinator.md")
+        findings_brief = "\n".join(
+            f"- [{f.architecture.value}] {f.customer_need} → {f.proposed_solution}"
+            for f in findings
+        )
+        user = (
+            "Integra las recomendaciones de los especialistas en una narrativa "
+            "ejecutiva (STAR) y resuelve contradicciones si las hay. Devuelve la "
+            "estructura pedida.\n\n"
+            f"Cliente: {opportunity.customer} · Industria: {opportunity.industry}\n"
+            f"Objetivos: {'; '.join(opportunity.objectives)}\n\n"
+            f"Hallazgos:\n{findings_brief}\n\n"
+            f"Integración: {integration}"
+        )
+        result: ExecutiveSynthesis = structured.invoke(
+            [SystemMessage(content=system), HumanMessage(content=user)]
+        )  # type: ignore[assignment]
+        return result
+
+    @staticmethod
+    def _prompt(name: str) -> str:
+        path = PROMPTS_DIR / name
+        return path.read_text(encoding="utf-8") if path.exists() else ""

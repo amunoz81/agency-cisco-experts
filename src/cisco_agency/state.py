@@ -7,6 +7,8 @@ from typing import Annotated, TypedDict
 
 from .schemas import (
     Bom,
+    CritiqueResult,
+    ExecutiveSynthesis,
     FinancialCase,
     Opportunity,
     ReviewResult,
@@ -16,11 +18,7 @@ from .schemas import (
 
 
 class AgencyState(TypedDict, total=False):
-    """Estado que fluye por el grafo.
-
-    `findings` usa un reducer aditivo para que los nodos de especialistas
-    puedan aportar hallazgos sin pisarse (soporta futura ejecución en paralelo).
-    """
+    """Estado que fluye por el grafo."""
 
     # Entrada cruda de la oportunidad (dict libre desde YAML/JSON)
     raw_input: dict
@@ -33,8 +31,10 @@ class AgencyState(TypedDict, total=False):
     selected_specialists: list[str]
     scope_approved: bool
 
-    # Hallazgos de especialistas (formato común)
-    findings: Annotated[list[SpecialistFinding], operator.add]
+    # Hallazgos de especialistas (formato común). Overwrite: el nodo de
+    # especialistas devuelve la lista completa (así el loop de revisión reemplaza
+    # en lugar de duplicar).
+    findings: list[SpecialistFinding]
 
     # Integración entre arquitecturas (texto narrativo + flujos)
     integration: dict
@@ -43,8 +43,15 @@ class AgencyState(TypedDict, total=False):
     bom: Bom
     financial_case: FinancialCase
 
-    # Revisión técnica independiente
+    # Revisión técnica (determinista) y crítica cualitativa (LLM)
     review: ReviewResult
+    critique: CritiqueResult
+    revision_count: int
+    should_revise: bool
+    review_feedback: str
+
+    # Síntesis ejecutiva del coordinador (narrativa de negocio, STAR)
+    synthesis: ExecutiveSynthesis
 
     # Propuesta final (rutas de artefactos generados)
     proposal: dict

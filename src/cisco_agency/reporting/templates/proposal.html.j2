@@ -64,12 +64,19 @@
 
 <!-- RESUMEN EJECUTIVO / STAR -->
 <h2>1. Resumen ejecutivo (STAR)</h2>
+{% if executive_summary %}
+<div class="card"><strong>Síntesis del coordinador:</strong> {{ executive_summary }}</div>
+{% endif %}
 <table class="star">
   <tr><td>Situación</td><td>{{ star.situation }}</td></tr>
   <tr><td>Tarea</td><td>{{ star.task }}</td></tr>
   <tr><td>Acción</td><td>{{ star.action }}</td></tr>
   <tr><td>Resultado</td><td>{{ star.result }}</td></tr>
 </table>
+{% if contradictions %}
+<h3>Contradicciones resueltas por el coordinador</h3>
+<ul>{% for c in contradictions %}<li>{{ c }}</li>{% endfor %}</ul>
+{% endif %}
 
 <div class="grid2">
   {% for k in kpis %}
@@ -197,6 +204,11 @@ finales se confirman con cotización autorizada del año fiscal vigente.</p>
   {% endfor %}
 </table>
 {% else %}<p class="muted">Sin observaciones.</p>{% endif %}
+{% if critique and critique.rationale %}
+<h3>Crítica cualitativa (revisor)</h3>
+<p class="muted">{{ critique.rationale }}</p>
+{% if critique.issues %}<ul>{% for i in critique.issues %}<li>{{ i }}</li>{% endfor %}</ul>{% endif %}
+{% endif %}
 
 <!-- MÉTRICAS Y ANEXOS -->
 <h2>10. Métricas de éxito y pendientes</h2>

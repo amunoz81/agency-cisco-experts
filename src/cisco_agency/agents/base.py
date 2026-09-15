@@ -51,30 +51,40 @@ class SpecialistAgent(ABC):
         return f"Eres el especialista Cisco de {self.architecture.value}."
 
     # -- Interfaz principal ------------------------------------------------
-    def analyze(self, opportunity: Opportunity) -> SpecialistFinding:
+    def analyze(
+        self, opportunity: Opportunity, feedback: str | None = None
+    ) -> SpecialistFinding:
         retrieved = self.kb.evidence_for(self.role, opportunity)
         if self.router.is_offline(self.role):
             finding = self._offline_finding(opportunity)
         else:
-            finding = self._llm_finding(opportunity, retrieved)
+            finding = self._llm_finding(opportunity, retrieved, feedback)
         finding.evidence = _merge_evidence(retrieved, finding.evidence)
         return finding
 
     # -- Ejecución con LLM -------------------------------------------------
     def _llm_finding(
-        self, opportunity: Opportunity, grounding: list[Evidence]
+        self,
+        opportunity: Opportunity,
+        grounding: list[Evidence],
+        feedback: str | None = None,
     ) -> SpecialistFinding:
         model = self.router.for_role(self.role)
         structured = model.with_structured_output(SpecialistFinding)
         messages = [
             SystemMessage(content=self.system_prompt()),
-            HumanMessage(content=self._user_prompt(opportunity, grounding)),
+            HumanMessage(content=self._user_prompt(opportunity, grounding, feedback)),
         ]
         finding: SpecialistFinding = structured.invoke(messages)  # type: ignore[assignment]
         finding.architecture = self.architecture
         return finding
 
-    def _user_prompt(self, opportunity: Opportunity, grounding: list[Evidence]) -> str:
+    def _user_prompt(
+        self,
+        opportunity: Opportunity,
+        grounding: list[Evidence],
+        feedback: str | None = None,
+    ) -> str:
         ctx = ""
         if grounding:
             lines = [
@@ -87,11 +97,18 @@ class SpecialistAgent(ABC):
                 "\n\nContexto de referencia (cita estas fuentes cuando apliquen; "
                 "no inventes SKUs ni precios):\n" + "\n".join(lines)
             )
+        fb = ""
+        if feedback:
+            fb = (
+                "\n\nRevisión solicitada por el revisor técnico (corrige esto en tu "
+                f"nuevo hallazgo):\n{feedback}"
+            )
         return (
             "Analiza la siguiente oportunidad y entrega tu hallazgo en el formato "
             "común (necesidad → solución → dependencias → dimensionamiento → "
             "licencias → beneficio medible → evidencia → riesgos y pendientes)."
             + ctx
+            + fb
             + f"\n\nOportunidad:\n{opportunity.model_dump_json(indent=2)}"
         )
 
