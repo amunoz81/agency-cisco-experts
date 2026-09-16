@@ -58,6 +58,21 @@ secure_networking:
         extremo (campus, sucursal, WAN y nube) con identidad (ISE/Duo),
         segmentación y aplicación de política consistente. Base para posicionar
         Secure Networking como capa de conectividad y segmentación.
+    - title: "Cisco SASE/SSE Architecture Guide (sucursal y trabajo remoto)"
+      url: https://www.cisco.com/c/en/us/solutions/collateral/enterprise/design-zone-security/sase-sse-ag.html
+      version: "2025"
+      summary: >-
+        SASE converge red y seguridad en el borde como servicios de nube para la
+        fuerza de trabajo híbrida (sucursal, remoto, SaaS). Security Service Edge
+        (SSE) consolida DNS-layer security, Secure Web Gateway (SWG),
+        Firewall-as-a-Service (FWaaS), CASB, DLP y Zero Trust Network Access
+        (ZTNA). SD-WAN optimiza el enrutamiento multi-enlace con acceso directo a
+        Internet (evita backhaul al datacenter). ZTNA aplica segmentación a nivel
+        de aplicación con MFA y postura de dispositivo. Marco de tres pilares:
+        identidad de usuario/dispositivo, conectividad red/nube y acceso a
+        aplicación/datos. Se despliega como SASE unificado (un proveedor) o SSE
+        modular, con transición gradual desde arquitecturas heredadas; Digital
+        Experience Monitoring da visibilidad de la experiencia de extremo a extremo.
 
 security:
   index_pages:
@@ -75,6 +90,33 @@ security:
         y on-prem; integración SD-WAN para desplegar política en remoto, sucursal
         y campus; detección de Shadow AI. Adopción incremental empezando por la
         mayor necesidad (Secure Access, ISE o Duo).
+    - title: "Cisco Hypershield (seguridad distribuida AI-native)"
+      url: https://www.cisco.com/c/en/us/products/collateral/security/hypershield/hypershield-so.html
+      version: "2025"
+      summary: >-
+        Plataforma de seguridad AI-native que distribuye la aplicación de política
+        en la infraestructura (workloads, VMs, contenedores, clústeres Kubernetes
+        y, a futuro, DPUs, aceleradores y switches) en lugar de appliances de
+        perímetro. Usa el Tesseract Security Agent sobre Isovalent Tetragon y eBPF
+        para enforcement a nivel de kernel con visibilidad profunda del
+        comportamiento de la aplicación. Segmentación autónoma: la IA aprende los
+        patrones de comunicación legítimos y genera/afina reglas (reemplaza el
+        proceso manual de 40+ días). Protección distribuida ante exploits:
+        prioriza vulnerabilidades por explotación activa y criticidad, y aplica
+        mitigaciones mientras se parchea. Actualizaciones auto-cualificadas con
+        doble plano de datos (prueba contra tráfico real antes de desplegar).
+    - title: "Cisco Secure Workload (micro-segmentación de aplicaciones)"
+      url: https://www.cisco.com/c/en/us/products/collateral/security/secure-workload/sec-workload-firewall-wp.html
+      version: "2025"
+      summary: >-
+        Micro-segmentación Zero Trust para datacenter y multi-nube. Telemetría
+        con agente (procesos, flujos, vulnerabilidades para forense y monitoreo
+        en tiempo real) y sin agente (aprovecha la infraestructura de red).
+        Algoritmos de ML descubren clústeres de aplicaciones y dependencias, y
+        generan automáticamente políticas de micro-segmentación por workload.
+        Orquestación consistente sobre bare-metal, VMs y contenedores
+        (Kubernetes) y en AWS, Azure y GCP (agentless). Reduce la superficie de
+        ataque y el movimiento lateral; se integra con Secure Firewall.
 
 it_ot:
   index_pages:
@@ -115,6 +157,28 @@ observability_soc:
         correlación de calidad y disponibilidad. Complementar con Splunk
         (SIEM/SOAR) y ThousandEyes (experiencia digital) según necesidad de
         correlación cross-domain.
+    - title: "Cisco ThousandEyes (monitoreo de experiencia digital)"
+      url: https://www.cisco.com/c/dam/m/en_in/pdf/thousandeyes-platform-overview.pdf
+      version: "2025"
+      summary: >-
+        Plataforma de Digital Experience Monitoring para ver, entender y mejorar
+        la experiencia sobre cualquier red. Tres tipos de agente: Enterprise
+        Agents (software ligero en campus, datacenter, VPC/VNet y sucursales; con
+        monitoreo activo, SNMP y mapeo topológico), Cloud Agents (gestionados por
+        ThousandEyes en 200+ ciudades para simular la experiencia del usuario vía
+        ISPs de última milla) y Endpoint Agents (experiencia desde el dispositivo
+        del usuario). Se despliega en OVA/VM, Linux, Cisco Catalyst 9000, SD-WAN,
+        Docker y AWS/Azure/GCP. Flujo de diseño: definir qué datos capturar y
+        desde dónde, configurar pruebas y visualizar. Ideal para correlación de
+        experiencia hacia el SOC (con Splunk) y validación de rutas a SaaS/nube.
+    - title: "Cisco ThousandEyes Enterprise Agent en Catalyst 9000 (deployment)"
+      url: https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9400-series-switches/guide-c07-2431113.html
+      version: "2025"
+      summary: >-
+        Guía de despliegue de agentes Enterprise de ThousandEyes embebidos en
+        switches Catalyst 9000, para instrumentar el campus con vantage points
+        internos sin hardware adicional. Complementa la observabilidad de red con
+        pruebas activas desde el propio acceso.
 
 datacenter_ai:
   index_pages:
