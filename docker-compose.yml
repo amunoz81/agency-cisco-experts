@@ -1,0 +1,23 @@
+# Levanta la web con: docker compose up --build
+# Las variables se toman del entorno o de un archivo .env en esta carpeta
+# (crea uno con: cp .env.example .env). Sin OPENAI_API_KEY corre en modo offline.
+services:
+  web:
+    build: .
+    image: cisco-experts-agency:latest
+    ports:
+      - "${WEB_PORT:-8000}:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - LLM_PROVIDER=${LLM_PROVIDER:-openai}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4.1-mini}
+      - OFFLINE=${OFFLINE:-false}
+      - MODELS_CONFIG=${MODELS_CONFIG:-config/models.yaml}
+      - FISCAL_YEAR=${FISCAL_YEAR:-FY26}
+      - CURRENCY=${CURRENCY:-USD}
+    volumes:
+      # Persiste las propuestas generadas fuera del contenedor.
+      - ./output:/app/output
+    restart: unless-stopped

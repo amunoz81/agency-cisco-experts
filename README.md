@@ -87,8 +87,15 @@ pip install -e '.[web]'
 cisco-agency serve      # http://127.0.0.1:8000   (o: make web)
 ```
 
-Ver [docs/WEB.md](docs/WEB.md). El logotipo de Cisco (marca de terceros) no se
-incluye: coloca el aprobado en `src/cisco_agency/web/static/logo.svg`.
+Para compartirla con el equipo, con **Docker**:
+
+```bash
+cp .env.example .env
+docker compose up --build      # http://localhost:8000
+```
+
+Ver [docs/WEB.md](docs/WEB.md). El logotipo de Cisco (marca de terceros): coloca
+el asset aprobado en `src/cisco_agency/web/static/logo.svg`.
 
 ## Roles de la agencia
 

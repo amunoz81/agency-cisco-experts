@@ -9,6 +9,7 @@ help:
 	@echo "  make test         Corre la batería de pruebas"
 	@echo "  make eval         Corre las evaluaciones (dataset dorado, offline)"
 	@echo "  make web          Levanta la interfaz web (formulario + propuesta)"
+	@echo "  make docker-up    Construye y levanta la web en Docker (compose)"
 	@echo "  make lint         Ruff + mypy"
 	@echo "  make fmt          Formatea con ruff"
 	@echo "  make clean        Limpia artefactos generados"
@@ -34,6 +35,15 @@ eval:
 
 web:
 	. .venv/bin/activate && pip install -e ".[web]" -q && python -m cisco_agency.run serve
+
+docker-build:
+	docker build -t cisco-experts-agency:latest .
+
+docker-up:
+	docker compose up --build
+
+docker-down:
+	docker compose down
 
 lint:
 	ruff check src tests

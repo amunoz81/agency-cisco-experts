@@ -34,6 +34,30 @@ El backend mapea el formulario a una `Opportunity`, infiere el alcance
 (especialistas) a partir del texto libre y ejecuta el grafo. Devuelve métricas,
 los especialistas convocados y la propuesta (HTML embebido + descarga PDF/HTML).
 
+## Despliegue con Docker (para compartir con el equipo)
+
+```bash
+cp .env.example .env         # opcional: OPENAI_API_KEY, LLM_PROVIDER, modelo…
+docker compose up --build    # http://localhost:8000   (o: make docker-up)
+```
+
+- Sin `OPENAI_API_KEY` la web corre en **modo offline** (sin costo, plantillado).
+- El puerto del host se cambia con `WEB_PORT` (`WEB_PORT=9000 docker compose up`).
+- Las propuestas generadas se persisten en `./output` (volumen).
+- La imagen usa `xhtml2pdf` (PDF pure-Python), por lo que **no requiere libs de
+  sistema**. Para PDF de máxima fidelidad con WeasyPrint, añade al `Dockerfile`
+  `apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0` y el
+  extra `.[pdf]`.
+- El contenedor arranca con `python -m cisco_agency.web`, que lee `HOST`/`PORT`
+  del entorno.
+
+Para un solo contenedor sin compose:
+
+```bash
+docker build -t cisco-experts-agency .
+docker run -p 8000:8000 -e OPENAI_API_KEY=sk-... cisco-experts-agency
+```
+
 ## Arquitectura
 
 - `web/app.py` — FastAPI: `/` (form), `/api/config`, `/api/proposal`, `/files/*`.
