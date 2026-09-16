@@ -71,6 +71,20 @@ body {
 .field { margin-bottom: 16px; }
 .field label { display: block; font-weight: 700; font-size: 13px; margin-bottom: 6px; color: #23364d; }
 .field .req { color: var(--secondary); }
+.field-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+@media (max-width: 520px) { .field-row { grid-template-columns: 1fr; } }
+.checks { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.check {
+  display: inline-flex; align-items: center; gap: 7px; font-weight: 600;
+  font-size: 13px; color: #23364d; background: #fbfdff; border: 1px solid var(--line);
+  border-radius: 999px; padding: 7px 12px; cursor: pointer;
+}
+.check input { accent-color: var(--secondary); }
+.field input[type=number] {
+  width: 100%; border: 1px solid var(--line); border-radius: 10px;
+  padding: 11px 12px; font-size: 14px; font-family: inherit; background: #fbfdff;
+}
+.field input[type=number]:focus { outline: none; border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(27,160,215,.18); }
 .field input[type=text], .field select, .field textarea {
   width: 100%; border: 1px solid var(--line); border-radius: 10px;
   padding: 11px 12px; font-size: 14px; font-family: inherit; background: #fbfdff;

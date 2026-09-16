@@ -141,6 +141,10 @@ class Opportunity(BaseModel):
     current_products: list[str] = Field(
         default_factory=list, description="Productos Cisco vigentes del cliente."
     )
+    remote_users: int | None = Field(default=None, description="Usuarios remotos/híbridos.")
+    cloud_providers: list[str] = Field(
+        default_factory=list, description="Proveedores de nube existentes (AWS, Azure, GCP…)."
+    )
     constraints: list[str] = Field(default_factory=list)
     budget: str | None = None
     horizon_years: int = 3

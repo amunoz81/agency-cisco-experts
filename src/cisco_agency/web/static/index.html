@@ -65,6 +65,33 @@
             <textarea name="current_products" id="current_products" data-i18n-ph="f_products_ph"></textarea>
           </div>
 
+          <div class="field-row">
+            <div class="field">
+              <label data-i18n="f_sites">N.º de sedes</label>
+              <input type="number" min="0" name="n_sites" id="n_sites" placeholder="0" />
+            </div>
+            <div class="field">
+              <label data-i18n="f_datacenters">N.º de datacenters</label>
+              <input type="number" min="0" name="n_datacenters" id="n_datacenters" placeholder="0" />
+            </div>
+            <div class="field">
+              <label data-i18n="f_remote">Usuarios remotos</label>
+              <input type="number" min="0" name="remote_users" id="remote_users" placeholder="0" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label data-i18n="f_cloud">Proveedores de nube existentes</label>
+            <div class="checks" id="cloudChecks">
+              <label class="check"><input type="checkbox" value="AWS" /> AWS</label>
+              <label class="check"><input type="checkbox" value="Microsoft Azure" /> Azure</label>
+              <label class="check"><input type="checkbox" value="Google Cloud" /> Google Cloud</label>
+              <label class="check"><input type="checkbox" value="Oracle Cloud" /> Oracle Cloud</label>
+              <label class="check"><input type="checkbox" value="IBM Cloud" /> IBM Cloud</label>
+              <label class="check"><input type="checkbox" value="Private Cloud" /> <span data-i18n="cloud_private">Nube privada</span></label>
+            </div>
+          </div>
+
           <div class="field">
             <label data-i18n="f_install">Base instalada interna de Cisco</label>
             <div class="dropzone" id="dropzone">

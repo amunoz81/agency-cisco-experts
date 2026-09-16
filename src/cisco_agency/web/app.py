@@ -84,11 +84,16 @@ async def create_proposal(
     situation: str = Form(""),
     problem: str = Form(""),
     current_products: str = Form(""),
+    n_sites: str = Form(""),
+    n_datacenters: str = Form(""),
+    remote_users: str = Form(""),
+    cloud_providers: str = Form(""),
     lang: str = Form("en"),
     offline: str = Form("false"),
     install_base: UploadFile | None = File(None),
 ) -> JSONResponse:
     products = _split(current_products)
+    clouds = _split(cloud_providers)
     parsed = {"items": [], "text": "", "note": ""}
     if install_base is not None and install_base.filename:
         content = await install_base.read()
@@ -99,6 +104,12 @@ async def create_proposal(
         objectives.append(problem)
     inventory = products + parsed["items"]
 
+    def _int(v: str) -> int:
+        try:
+            return max(int(float(v)), 0)
+        except (ValueError, TypeError):
+            return 0
+
     raw = {
         "customer": customer.strip(),
         "industry": vertical_label(vertical, lang) or vertical,
@@ -107,6 +118,10 @@ async def create_proposal(
         "objectives": objectives,
         "current_products": products,
         "inventory": inventory,
+        "n_sites": _int(n_sites),
+        "n_datacenters": _int(n_datacenters),
+        "remote_users": _int(remote_users),
+        "cloud_providers": clouds,
         "workloads": [],
         "pending_data": (
             [parsed["note"]] if parsed.get("note") else []

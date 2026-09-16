@@ -111,6 +111,9 @@ async function submitForm(e) {
   const fd = new FormData(form);
   fd.set("lang", LANG);
   fd.set("offline", document.getElementById("offline").checked ? "true" : "false");
+  const clouds = Array.from(document.querySelectorAll("#cloudChecks input:checked"))
+    .map((c) => c.value);
+  fd.set("cloud_providers", clouds.join(", "));
 
   document.getElementById("overlay").hidden = false;
   startSteps();

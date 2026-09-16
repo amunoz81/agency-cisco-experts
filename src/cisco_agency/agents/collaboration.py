@@ -22,7 +22,9 @@ class CollaborationSpecialist(SpecialistAgent):
     prompt_file = "collaboration.md"
 
     def _offline_finding(self, opportunity: Opportunity) -> SpecialistFinding:
-        total_users = sum(s.users or 0 for s in opportunity.sites) or 100
+        total_users = (sum(s.users or 0 for s in opportunity.sites) or 100) + (
+            opportunity.remote_users or 0
+        )
         # Salas de reunión estimadas: ~1 por cada 40 usuarios (ejemplo).
         rooms = max(total_users // 40, len(opportunity.sites))
         scope = (

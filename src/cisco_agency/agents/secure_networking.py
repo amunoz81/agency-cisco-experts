@@ -23,6 +23,8 @@ class SecureNetworkingSpecialist(SpecialistAgent):
 
     def _offline_finding(self, opportunity: Opportunity) -> SpecialistFinding:
         n_sites = max(len(opportunity.sites), 1)
+        remote = opportunity.remote_users or 0
+        total_users = (sum(s.users or 0 for s in opportunity.sites) or 100) + remote
         return SpecialistFinding(
             architecture=self.architecture,
             scope=ScopeClassification.NECESSARY,
@@ -92,11 +94,11 @@ class SecureNetworkingSpecialist(SpecialistAgent):
                     BomLine(
                         sku="DUO-ADV",
                         description="Cisco DUO Advantage (MFA por usuario)",
-                        quantity=sum(s.users or 0 for s in opportunity.sites) or 100,
+                        quantity=total_users,
                         architecture=self.architecture,
                         is_license=True,
                         management="cloud",
-                        sizing_basis="Por usuario",
+                        sizing_basis=f"Por usuario (incl. {remote} remotos)",
                     ),
                 ]
             ),

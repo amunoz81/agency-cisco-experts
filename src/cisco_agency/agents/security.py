@@ -22,6 +22,9 @@ class SecuritySpecialist(SpecialistAgent):
     prompt_file = "security.md"
 
     def _offline_finding(self, opportunity: Opportunity) -> SpecialistFinding:
+        remote = opportunity.remote_users or 0
+        endpoints = (sum(s.users or 0 for s in opportunity.sites) or 100) + remote
+        clouds = ", ".join(opportunity.cloud_providers) if opportunity.cloud_providers else None
         return SpecialistFinding(
             architecture=self.architecture,
             scope=ScopeClassification.NECESSARY,
@@ -46,6 +49,11 @@ class SecuritySpecialist(SpecialistAgent):
             sizing=(
                 "Secure Workload por número de workloads/agentes; NDR por FPS/flujos; "
                 "EDR por endpoints; firewalls por throughput e inspección TLS."
+                + (
+                    f" Micro-segmentación multi-nube (agentless) sobre: {clouds}."
+                    if clouds
+                    else ""
+                )
             ),
             licenses=[
                 "Secure Firewall Threat Defense (IPS/URL/Malware)",
@@ -94,11 +102,11 @@ class SecuritySpecialist(SpecialistAgent):
                     BomLine(
                         sku="SEC-ENDPOINT",
                         description="Cisco Secure Client / Secure Endpoint",
-                        quantity=sum(s.users or 0 for s in opportunity.sites) or 100,
+                        quantity=endpoints,
                         architecture=self.architecture,
                         is_license=True,
                         management="cloud",
-                        sizing_basis="Por endpoint",
+                        sizing_basis=f"Por endpoint (incl. {remote} remotos)",
                     ),
                 ]
             ),
