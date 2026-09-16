@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     # Ruta al YAML de enrutamiento de modelos por rol (opcional).
     models_config: str | None = Field(default=None, alias="MODELS_CONFIG")
 
+    # La agencia sincroniza el corpus de CVDs con el catálogo en cada arranque.
+    auto_ingest_cvd: bool = Field(default=True, alias="AUTO_INGEST_CVD")
+
     # Anthropic
     anthropic_api_key: str | None = Field(default=None, alias="ANTHROPIC_API_KEY")
     anthropic_model: str = Field(default="claude-opus-4-8", alias="ANTHROPIC_MODEL")

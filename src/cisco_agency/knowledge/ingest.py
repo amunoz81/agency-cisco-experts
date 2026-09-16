@@ -144,6 +144,36 @@ def ingest(
     return written
 
 
+def ensure_corpus(catalog_path: Path | str | None = None) -> int:
+    """Sincroniza automáticamente el corpus con el catálogo si hace falta.
+
+    La agencia la invoca al arrancar: si el catálogo cambió (o faltan documentos
+    CVD), regenera el corpus. Es idempotente, offline (no red) y silenciosa ante
+    errores (p. ej. instalación de solo lectura). Devuelve el número de docs
+    escritos (0 si no hizo falta o no pudo escribir).
+    """
+    path = Path(catalog_path) if catalog_path else CATALOG_PATH
+    if not path.exists():
+        return 0
+    try:
+        catalog = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        expected = 0
+        for arch in ARCHITECTURES:
+            expected += len((catalog.get(arch) or {}).get("cvds", []))
+        existing = list(CORPUS_DIR.glob("cvd-*.md")) if CORPUS_DIR.exists() else []
+        catalog_mtime = path.stat().st_mtime
+        up_to_date = (
+            len(existing) == expected
+            and existing
+            and all(f.stat().st_mtime >= catalog_mtime for f in existing)
+        )
+        if up_to_date:
+            return 0
+        return len(ingest(path))
+    except Exception:
+        return 0
+
+
 if __name__ == "__main__":
     ids = ingest()
     print(f"Ingestados {len(ids)} documentos CVD al corpus:")

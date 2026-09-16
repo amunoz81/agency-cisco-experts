@@ -243,6 +243,12 @@ def build_graph(
     """
     settings = settings or get_settings()
     router = ModelRouter(settings)
+    # La agencia mantiene su conocimiento de CVDs al día automáticamente:
+    # si el catálogo cambió, regenera el corpus antes de cargar la base.
+    if settings.auto_ingest_cvd:
+        from .knowledge import ensure_corpus
+
+        ensure_corpus()
     kb = KnowledgeBase()
     approver = approver or AutoApprover()
     Path(out_dir).mkdir(parents=True, exist_ok=True)

@@ -117,6 +117,28 @@ security:
         Orquestación consistente sobre bare-metal, VMs y contenedores
         (Kubernetes) y en AWS, Azure y GCP (agentless). Reduce la superficie de
         ataque y el movimiento lateral; se integra con Secure Firewall.
+    - title: "Cisco SAFE Reference Architecture (Secure Firewall / PINs)"
+      url: https://www.cisco.com/c/en/us/solutions/collateral/enterprise/design-zone-security/safe-overview-guide.html
+      version: "2025"
+      summary: >-
+        SAFE es la arquitectura de referencia de seguridad de Cisco: organiza el
+        diseño por Places in the Network (campus, sucursal, edge, datacenter,
+        nube) y por capacidades (defensa de amenazas, segmentación, control de
+        acceso, visibilidad). Cisco Secure Firewall (Threat Defense) es el punto
+        de aplicación de perímetro/DC (IPS, URL, malware, TLS). Incluye CVDs
+        validados por PIN (Secure Campus, Secure Branch, Secure Edge, Secure Data
+        Center). Base para justificar el firewall y el mapa de controles.
+    - title: "Cisco XDR (detección y respuesta extendida)"
+      url: https://www.cisco.com/c/en/us/products/collateral/security/xdr/xdr-aag.html
+      version: "2025"
+      summary: >-
+        XDR en la nube que correlaciona seis telemetrías clave del SOC: endpoint,
+        red, firewall, correo, identidad y DNS. Motor de IA con analítica de
+        comportamiento, detección de anomalías y reconocimiento de patrones para
+        hallar IOCs sutiles. Prioriza incidentes por riesgo material usando MITRE
+        ATT&CK (TTPs) y criticidad del activo. XDR Forensics recolecta artefactos
+        y habilita respuesta remota; integra soluciones Cisco y de terceros.
+        Complementa a Splunk y Secure Network Analytics en el SOC.
 
 it_ot:
   index_pages:
@@ -214,6 +236,18 @@ datacenter_ai:
         Overlay VXLAN con plano de control BGP EVPN para fabric de datacenter
         multi-tenant y escalable (estándar abierto), alternativa a ACI para
         segmentación L2/L3 sobre Nexus 9000.
+    - title: "Cisco AI PODs (infraestructura modular para IA — Secure AI Factory)"
+      url: https://www.cisco.com/c/en/us/products/collateral/servers-unified-computing/ucs-c-series-rack-servers/ai-pods-aag.html
+      version: "2025"
+      summary: >-
+        Infraestructura full-stack pre-validada para IA empresarial (base de la
+        Cisco Secure AI Factory con NVIDIA): cómputo UCS (C845A/C885A M8) con GPUs
+        NVIDIA H100/H200 y RTX PRO 6000 Blackwell, y red Nexus 9000 hasta 800G
+        lossless de baja latencia. Diseños pre-validados (CVDs + NVIDIA Enterprise
+        Reference Architectures, p. ej. ERA 2-8-9-400) y gestión unificada con
+        Intersight. Diseño modular por unidades de escala de 32 a 128+ GPUs;
+        soporta entrenamiento, fine-tuning e inferencia. Reduce el tiempo de
+        puesta en marcha hasta ~50% frente a un armado a la medida (DIY).
 
 collaboration:
   index_pages:
@@ -231,3 +265,14 @@ collaboration:
         y endpoints. Prácticas: redundancia geográfica, segregar voz/datos,
         monitoreo con RTMT, hardening (reglas de firewall, gestión de
         credenciales, parcheo regular).
+    - title: "Cisco Preferred Architecture for Webex Calling (nube)"
+      url: https://www.cisco.com/c/dam/en/us/td/docs/solutions/CVD/Collaboration/hybrid/AltDesigns/PA-WbxCall.pdf
+      version: "ago 2025"
+      summary: >-
+        Webex Calling como control de llamadas en la nube, en despliegue aislado
+        o combinado con colaboración on-prem (Unified CM). Opciones de PSTN y
+        conectividad Private Network Connect (PNC): Internet, Equinix Fabric
+        (Edge Connect) o PNC dedicado para asegurar QoS y baja latencia de voz.
+        Variante Dedicated Instance para clientes que requieren instancia
+        gestionada. Base para dimensionar por usuario/estación, sesiones PSTN
+        concurrentes y modalidad cloud vs híbrida.

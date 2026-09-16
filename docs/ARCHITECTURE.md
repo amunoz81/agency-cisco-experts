@@ -132,8 +132,15 @@ Los agentes aprenden automáticamente de los CVDs oficiales por arquitectura:
   y la cita. Para **texto completo**, descarga el CVD (PDF/HTML) a
   `knowledge/cvd_downloads/` y córrelo con el extra `.[ingest]` (pypdf): el
   ingester extrae el texto y enriquece el documento.
-- Refresco: re-ejecuta `ingest-cvd` (idempotente). Puede programarse (cron /
-  tareas) para mantener el corpus al día.
+- **Auto-sincronización**: la agencia mantiene el corpus al día por sí misma.
+  Al construir el grafo, `ensure_corpus()` detecta si el catálogo cambió (o
+  faltan documentos) y regenera el corpus automáticamente — sin comando manual.
+  Es idempotente, offline y silenciosa ante instalaciones de solo lectura. Se
+  desactiva con `AUTO_INGEST_CVD=false`. `cisco-agency ingest-cvd` sigue
+  disponible para forzarlo.
+- Ampliar con nuevos CVDs: edita `cvd_sources.yaml` (curación) — obtener CVDs
+  nuevos de cisco.com no se puede automatizar por el WAF, pero una vez en el
+  catálogo, la agencia los incorpora sola en la siguiente corrida.
 
 Esto evita inventar afirmaciones: lo no respaldado queda como `pendiente` o
 `condicionada`, y el revisor lo separa de lo `verificada`.
