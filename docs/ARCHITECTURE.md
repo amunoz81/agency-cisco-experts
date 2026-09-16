@@ -113,11 +113,27 @@ adjunta al hallazgo como `Evidence` con fuente/fecha/versión/estado.
 
 - `KnowledgeBase` (`knowledge/base.py`): carga `knowledge/corpus/*.md` (frontmatter
   YAML + cuerpo) y hace recuperación por palabras clave, sin dependencias ni red.
-- Corpus semilla: estándares reales verificados (NIST SP 800-207, CISA ZTMM,
-  IEC 62443) y **plantillas** de producto (`TEMPLATE-*.md`) marcadas como
-  `condicionada`, para que el equipo las reemplace con material oficial.
+- Corpus: estándares verificados (NIST SP 800-207, CISA ZTMM, IEC 62443),
+  **Cisco Validated Designs** ingestados por arquitectura, y plantillas
+  (`TEMPLATE-*.md`) para lo que falte por confirmar.
 - Punto de extensión: sustituir el scorer por embeddings / vector store para RAG
   a escala, manteniendo la misma interfaz `search()` / `evidence_for()`.
+
+### Aprendizaje de Cisco Validated Designs (CVDs)
+
+Los agentes aprenden automáticamente de los CVDs oficiales por arquitectura:
+
+- `knowledge/cvd_sources.yaml` es el **catálogo** (título + URL oficial + resumen
+  técnico) por arquitectura, con páginas índice para ampliarlo.
+- `cisco-agency ingest-cvd` (`knowledge/ingest.py`) convierte el catálogo en
+  documentos del corpus (`corpus/cvd-<arch>-<slug>.md`, estado `verificada`),
+  que el retriever cita en cada corrida.
+- cisco.com bloquea el scraping (403/WAF), por eso el catálogo guarda el resumen
+  y la cita. Para **texto completo**, descarga el CVD (PDF/HTML) a
+  `knowledge/cvd_downloads/` y córrelo con el extra `.[ingest]` (pypdf): el
+  ingester extrae el texto y enriquece el documento.
+- Refresco: re-ejecuta `ingest-cvd` (idempotente). Puede programarse (cron /
+  tareas) para mantener el corpus al día.
 
 Esto evita inventar afirmaciones: lo no respaldado queda como `pendiente` o
 `condicionada`, y el revisor lo separa de lo `verificada`.

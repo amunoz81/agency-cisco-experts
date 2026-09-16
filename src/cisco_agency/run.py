@@ -153,6 +153,28 @@ def eval(
         raise typer.Exit(code=1)
 
 
+@app.command("ingest-cvd")
+def ingest_cvd(
+    arch: str = typer.Option(
+        None, help="Ingesta solo una arquitectura (p. ej. secure_networking)."
+    ),
+) -> None:
+    """Aprende de los Cisco Validated Designs: genera el corpus desde el catálogo."""
+    from .knowledge.ingest import ingest
+
+    ids = ingest(architecture=arch)
+    console.print(
+        Panel.fit(
+            f"[bold]Ingesta de CVDs completada[/bold]\n"
+            f"{len(ids)} documento(s) escritos en el corpus.\n"
+            "[dim]Los especialistas ya se fundamentan en ellos en cada corrida.[/dim]",
+            border_style="green",
+        )
+    )
+    for i in ids:
+        console.print(f"  · {i}")
+
+
 @app.command()
 def info() -> None:
     """Muestra la configuración efectiva."""

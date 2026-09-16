@@ -30,7 +30,7 @@ class Settings(BaseSettings):
 
     # OpenAI
     openai_api_key: str | None = Field(default=None, alias="OPENAI_API_KEY")
-    openai_model: str = Field(default="gpt-4o", alias="OPENAI_MODEL")
+    openai_model: str = Field(default="gpt-4.1-mini", alias="OPENAI_MODEL")
 
     # Azure OpenAI
     azure_openai_api_key: str | None = Field(default=None, alias="AZURE_OPENAI_API_KEY")

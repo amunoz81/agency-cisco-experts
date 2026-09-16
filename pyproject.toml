@@ -39,6 +39,10 @@ dev = [
     "ruff>=0.8",
     "mypy>=1.13",
 ]
+ingest = [
+    # Para enriquecer el corpus con texto completo de CVDs descargados (PDF).
+    "pypdf>=5.1",
+]
 
 [project.scripts]
 cisco-agency = "cisco_agency.run:app"
@@ -50,6 +54,7 @@ where = ["src"]
 cisco_agency = [
     "prompts/*.md",
     "knowledge/corpus/*.md",
+    "knowledge/cvd_sources.yaml",
     "reporting/templates/*.j2",
     "models.yaml",
 ]

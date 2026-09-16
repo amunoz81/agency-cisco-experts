@@ -6,3 +6,4 @@ Cada documento se puede convertir en `Evidence` para citar en los hallazgos.
 """
 
 from .base import KnowledgeBase, KnowledgeDoc  # noqa: F401
+from .ingest import ingest  # noqa: F401

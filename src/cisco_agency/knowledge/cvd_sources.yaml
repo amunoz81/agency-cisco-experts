@@ -1,0 +1,169 @@
+# ============================================================================
+# Catálogo de Cisco Validated Designs (CVDs) por arquitectura.
+# ----------------------------------------------------------------------------
+# Fuente de "aprendizaje" de los agentes: `cisco-agency ingest-cvd` convierte
+# cada entrada en un documento del corpus (knowledge/corpus/) que el retriever
+# usa para fundamentar los hallazgos (grounding) con cita a la fuente oficial.
+#
+# NOTA: cisco.com bloquea el scraping automático (WAF/403). Por eso el catálogo
+# guarda título + URL oficial + un resumen técnico. Para texto COMPLETO, descarga
+# el CVD (PDF/HTML) a knowledge/cvd_downloads/ y referencia `local_file`; el
+# ingester lo parsea y enriquece el documento. Índice oficial de CVDs:
+# https://www.cisco.com/site/us/en/solutions/cisco-validated/index.html
+#
+# `index_pages` por arquitectura son las páginas "ver todas las guías" para
+# ampliar el catálogo (agrega nuevas entradas bajo `cvds`).
+# Estado por defecto de las entradas: verificada (fuente oficial de Cisco).
+# ============================================================================
+
+retrieved: "2026-09-15"
+
+secure_networking:
+  index_pages:
+    - https://www.cisco.com/c/en/us/solutions/design-zone/campus-branch.html
+  cvds:
+    - title: "Campus LAN and WLAN Design Guide (CVD)"
+      url: https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/cisco-campus-lan-wlan-design-guide.html
+      version: "2025"
+      summary: >-
+        Catalyst 9000 en todo el diseño: acceso (9200/9300, 9400 modular),
+        distribución (9400/9500/9600) y core (9500/9600). Wireless con Catalyst
+        9800 (appliance/virtual/embebido, 250-6000 APs) y APs Catalyst 9100
+        Wi-Fi 6. Recomienda capa de distribución simplificada con StackWise
+        Virtual o stacks (uplinks activo-activo por EtherChannel, sin bloqueo
+        STP). Segmentación avanzada con SD-Access (fabric overlay, políticas por
+        intención wired/wireless) o BGP EVPN VXLAN (estándar abierto). Wireless
+        en modo centralizado, FlexConnect o fabric SD-Access. Dimensionamiento:
+        oversubscription acceso-distribución ~3.6:1, distribución-core ~4:1;
+        mGig 2.5-5 Gbps y PoE+ (90-100W) para 802.11ax. Alta disponibilidad con
+        SSO, NSF e ISSU para upgrades sin downtime.
+    - title: "Cisco Catalyst SD-WAN Design Guide (CVD)"
+      url: https://www.cisco.com/c/en/us/td/docs/solutions/CVD/SDWAN/cisco-sdwan-design-guide.html
+      version: "2025"
+      summary: >-
+        Cuatro planos: orquestación (SD-WAN Validator/NAT traversal), gestión
+        (SD-WAN Manager), control (SD-WAN Controllers) y datos (WAN Edge).
+        Segmentación con VPNs: VPN 0 transporte, VPN 512 gestión OOB, VPNs
+        1-511 de servicio para datos. Cifrado AES-256 GCM con anti-replay
+        (ventanas 64-4096; 4096 recomendado con QoS). OMP distribuye rutas,
+        políticas y llaves por DTLS/TLS. Application-aware routing con SLA por
+        sondas BFD (pérdida/latencia/jitter). Buenas prácticas: controladores
+        redundantes por transporte, autenticación por certificados y lista de
+        equipos autorizados, aprovisionamiento ZTP/PnP y segmentación por VPNs.
+    - title: "Cisco Secure Network Reference Architecture"
+      url: https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/Intro-Cisco-Secure-Network-Architecture.html
+      version: "2025"
+      summary: >-
+        Arquitectura de referencia que fusiona red y seguridad de extremo a
+        extremo (campus, sucursal, WAN y nube) con identidad (ISE/Duo),
+        segmentación y aplicación de política consistente. Base para posicionar
+        Secure Networking como capa de conectividad y segmentación.
+
+security:
+  index_pages:
+    - https://www.cisco.com/c/en/us/solutions/design-zone.html
+  cvds:
+    - title: "Cisco Zero Trust Access (At a Glance)"
+      url: https://www.cisco.com/c/en/us/products/collateral/security/secure-access/zero-trust-access-aag.html
+      version: "2025"
+      summary: >-
+        Zero Trust identity-first que unifica Cisco Secure Access (SASE/ZTNA),
+        Duo (MFA) e ISE (control de acceso a la red). Combina verificación de
+        identidad con postura del dispositivo, extendiendo confianza a IoT/OT.
+        Acceso de mínimo privilegio, ajustado dinámicamente por comportamiento
+        del usuario, postura y condiciones de red. Aplicación unificada en nube
+        y on-prem; integración SD-WAN para desplegar política en remoto, sucursal
+        y campus; detección de Shadow AI. Adopción incremental empezando por la
+        mayor necesidad (Secure Access, ISE o Duo).
+
+it_ot:
+  index_pages:
+    - https://www.cisco.com/c/en/us/solutions/design-zone/industries/manufacturing.html
+  cvds:
+    - title: "Networking and Security in Industrial Automation Environments (CVD)"
+      url: https://www.cisco.com/c/en/us/td/docs/solutions/Verticals/Industrial_Automation/IA_Horizontal/DG/Industrial-AutomationDG.html
+      version: "DG"
+      summary: >-
+        Diseño de referencia OT para entornos IACS de planta. Aplica red,
+        seguridad y gestión de datos a activos de producción. Zonas de confianza
+        alineadas a IEC 62443 (zonas y conductos) y modelo Purdue. Visibilidad
+        de todos los activos industriales y sus flujos con Cisco Cyber Vision
+        (inventario dinámico, monitoreo de zonas/conductos, evaluación de riesgo
+        y exposición). Provee segmentación macro/zona, control de acceso a zona,
+        detección y respuesta; coordinación con seguridad de TI para política de
+        acceso consistente y agregación de eventos OT en el SOC.
+    - title: "Cisco Industrial Security 3.1 Design Guide"
+      url: https://www.cisco.com/c/dam/en/us/td/docs/Technology/Industrial-Security-3-1-DG.pdf
+      version: "3.1 (jun 2025)"
+      summary: >-
+        Guía de seguridad industrial: construcción de zonas de confianza y
+        conductos IEC 62443, IDMZ en la frontera IT/OT, ubicación de sensores
+        Cyber Vision (embebidos en switches Catalyst IE y dedicados), control de
+        acceso con ISE/TrustSec y firewall industrial, y estrategia de adopción
+        sin afectar producción.
+
+observability_soc:
+  index_pages:
+    - https://www.cisco.com/c/en/us/solutions/design-zone.html
+  cvds:
+    - title: "Cisco Data Center Networking Blueprint (telemetría / Nexus Dashboard)"
+      url: https://www.cisco.com/c/en/us/td/docs/dcn/whitepapers/cisco-data-center-networking-blueprint-for-ai-ml-applications.html
+      version: "2025"
+      summary: >-
+        Observabilidad de fabric con Nexus Dashboard Insights (telemetría) y
+        Nexus Dashboard Fabric Controller (automatización de QoS). Base para
+        correlación de calidad y disponibilidad. Complementar con Splunk
+        (SIEM/SOAR) y ThousandEyes (experiencia digital) según necesidad de
+        correlación cross-domain.
+
+datacenter_ai:
+  index_pages:
+    - https://www.cisco.com/c/en/us/solutions/design-zone/data-center-design-guides.html
+  cvds:
+    - title: "Cisco ACI (Application Centric Infrastructure) Design Guide"
+      url: https://www.cisco.com/c/en/us/td/docs/dcn/whitepapers/cisco-application-centric-infrastructure-design-guide.html
+      version: "2025"
+      summary: >-
+        Topología spine-leaf (y multi-tier) con Nexus 9000 y APIC como
+        controlador de política centralizado. Leaf = VTEP de conexión de cargas;
+        spine = interconexión y mapeo endpoint-VTEP; APIC en clúster para
+        redundancia. Construcciones: Tenants (partición), EPGs (segmentación por
+        política), VRFs (routing multi-tenant), Contracts (política stateful
+        entre EPGs). Prácticas: emparejar generaciones de HW en vPC, border leaf
+        para L3 externo, versiones de SW consistentes en upgrades, dimensionar
+        spines por escalabilidad de endpoints, aplicar política en ingress de VRF.
+    - title: "Cisco Data Center Networking Blueprint for AI/ML Applications"
+      url: https://www.cisco.com/c/en/us/td/docs/dcn/whitepapers/cisco-data-center-networking-blueprint-for-ai-ml-applications.html
+      version: "2025"
+      summary: >-
+        Fabric de IA con Nexus 9000 (hasta 25.6 Tbps por ASIC, ~1.5 µs de
+        latencia); Nexus 9300 93600CD-GX y 9332D-GX2B para spine-leaf. Transporte
+        sin pérdida con RoCEv2 (RDMA sobre Ethernet): ECN marca en umbral de cola
+        y PFC aplica pausa por enlace; juntos implementan DCQCN. Ejemplo de
+        dimensionamiento: clúster de 1024 GPUs con diez leaf 93600CD-GX
+        (256×100G) a cuatro spine 9332D-GX2B (80×400G) = fabric no bloqueante.
+        Nexus Dashboard Insights (telemetría) y Fabric Controller (QoS lossless).
+    - title: "VXLAN BGP EVPN Design and Implementation Guide"
+      url: https://www.cisco.com/c/en/us/td/docs/dcn/whitepapers/cisco-vxlan-bgp-evpn-design-and-implementation-guide.html
+      version: "2025"
+      summary: >-
+        Overlay VXLAN con plano de control BGP EVPN para fabric de datacenter
+        multi-tenant y escalable (estándar abierto), alternativa a ACI para
+        segmentación L2/L3 sobre Nexus 9000.
+
+collaboration:
+  index_pages:
+    - https://www.cisco.com/c/en/us/solutions/enterprise/design-zone-collaboration/index.html
+  cvds:
+    - title: "Cisco Preferred Architecture for On-Premises Collaboration"
+      url: https://www.cisco.com/c/dam/en/us/td/docs/solutions/PA/overview/15x/clbpa15x.pdf
+      version: "15.x"
+      summary: >-
+        Control de llamadas con Unified CM (registro de endpoints y enrutamiento)
+        en clúster para redundancia. Expressway como borde (acceso remoto seguro
+        y conectividad híbrida/nube) en pares HA; MRA para acceso externo sin
+        VPN. CUBE como gateway PSTN (negociación de codecs y traducción de
+        protocolo). Unity (mensajería unificada), IM&P (mensajería y presencia)
+        y endpoints. Prácticas: redundancia geográfica, segregar voz/datos,
+        monitoreo con RTMT, hardening (reglas de firewall, gestión de
+        credenciales, parcheo regular).

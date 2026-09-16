@@ -57,11 +57,25 @@ el resto). Se configura en [`config/models.yaml`](config/models.yaml):
 cisco-agency models       # muestra rol → proveedor/modelo/modo
 ```
 
-Por defecto: `coordinator`, `security` y `technical_reviewer` usan **gpt-4o**; el
-resto de especialistas usan **gpt-4o-mini**. Puedes mezclar proveedores por rol
-(OpenAI/Anthropic/Azure) si tienes sus credenciales en `.env`. Un rol sin
-credenciales de su proveedor corre en offline individual; los demás no se afectan.
+Por defecto (económico + alta calidad, familia gpt-4.1): `coordinator`, `security`
+y `technical_reviewer` usan **gpt-4.1**; el resto de especialistas **gpt-4.1-mini**.
+Puedes mezclar proveedores por rol (OpenAI/Anthropic/Azure) si tienes sus
+credenciales en `.env`. Un rol sin credenciales de su proveedor corre en offline
+individual; los demás no se afectan.
 Ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#enrutamiento-de-modelos-por-agente).
+
+### Aprendizaje de Cisco Validated Designs (CVDs)
+
+Cada especialista se fundamenta en los **CVDs oficiales** de su arquitectura:
+
+```bash
+cisco-agency ingest-cvd     # genera el corpus desde knowledge/cvd_sources.yaml
+```
+
+El catálogo trae CVDs reales por arquitectura (Campus LAN/WLAN, SD-WAN, Zero
+Trust, ACI, DC Blueprint for AI/ML, Industrial Automation, Collaboration PA…).
+Amplíalo agregando entradas al YAML; para texto completo, descarga el PDF a
+`knowledge/cvd_downloads/` e instala el extra `pip install -e '.[ingest]'`.
 
 ## Roles de la agencia
 

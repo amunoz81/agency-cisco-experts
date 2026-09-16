@@ -8,16 +8,17 @@
 # Resolución: rol específico -> `default` -> valores globales de .env
 # Proveedores válidos: openai | anthropic | azure
 #
-# Estrategia por defecto (costo-eficiente):
-#   - Modelos POTENTES para roles de razonamiento/rigor: coordinador, security,
-#     revisor técnico.
-#   - Modelo ECONÓMICO (gpt-4o-mini) para el resto de especialistas.
-# Ajusta libremente estos valores; también puedes mezclar proveedores por rol.
+# Estrategia costo-eficiente + alta calidad (familia gpt-4.1):
+#   - gpt-4.1      para razonamiento/rigor: coordinador, security, revisor.
+#   - gpt-4.1-mini para el resto de especialistas (económico y sólido).
+# La familia gpt-4.1 es más barata que gpt-4o y de mayor calidad. La calidad de
+# los especialistas se apoya además en el grounding de los CVDs (ver knowledge/).
+# Ajusta libremente; también puedes mezclar proveedores por rol.
 # ============================================================================
 
 default:
   provider: openai
-  model: gpt-4o-mini
+  model: gpt-4.1-mini
   temperature: 0.2
   max_tokens: 4096
 
@@ -25,38 +26,38 @@ roles:
   # Entiende el negocio y define el alcance: conviene un modelo fuerte.
   coordinator:
     provider: openai
-    model: gpt-4o
+    model: gpt-4.1
     temperature: 0.1
 
   secure_networking:
     provider: openai
-    model: gpt-4o-mini
+    model: gpt-4.1-mini
 
   # Dominio crítico (Zero Trust, micro-segmentación): modelo fuerte.
   security:
     provider: openai
-    model: gpt-4o
+    model: gpt-4.1
 
   it_ot:
     provider: openai
-    model: gpt-4o-mini
+    model: gpt-4.1-mini
 
   observability_soc:
     provider: openai
-    model: gpt-4o-mini
+    model: gpt-4.1-mini
 
   datacenter_ai:
     provider: openai
-    model: gpt-4o-mini
+    model: gpt-4.1-mini
 
   collaboration:
     provider: openai
-    model: gpt-4o-mini
+    model: gpt-4.1-mini
 
   # Revisión rigurosa de compatibilidad/coherencia: modelo fuerte y frío.
   technical_reviewer:
     provider: openai
-    model: gpt-4o
+    model: gpt-4.1
     temperature: 0.0
 
 # ----------------------------------------------------------------------------

@@ -35,3 +35,8 @@ output/*
 # LangGraph / LangChain caches
 .langgraph_api/
 .cache/
+
+# CVDs descargados para enriquecer el corpus (grandes; no versionar)
+src/cisco_agency/knowledge/cvd_downloads/*
+!src/cisco_agency/knowledge/cvd_downloads/.gitkeep
+!src/cisco_agency/knowledge/cvd_downloads/README.md
