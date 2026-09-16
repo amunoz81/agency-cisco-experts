@@ -88,12 +88,24 @@ async def create_proposal(
     n_datacenters: str = Form(""),
     remote_users: str = Form(""),
     cloud_providers: str = Form(""),
+    sites_json: str = Form(""),
     lang: str = Form("en"),
     offline: str = Form("false"),
     install_base: UploadFile | None = File(None),
 ) -> JSONResponse:
     products = _split(current_products)
     clouds = _split(cloud_providers)
+
+    detailed_sites: list = []
+    if sites_json:
+        import json
+
+        try:
+            parsed_sites = json.loads(sites_json)
+            if isinstance(parsed_sites, list):
+                detailed_sites = [s for s in parsed_sites if isinstance(s, dict)]
+        except (ValueError, TypeError):
+            detailed_sites = []
     parsed = {"items": [], "text": "", "note": ""}
     if install_base is not None and install_base.filename:
         content = await install_base.read()
@@ -122,6 +134,8 @@ async def create_proposal(
         "n_datacenters": _int(n_datacenters),
         "remote_users": _int(remote_users),
         "cloud_providers": clouds,
+        # Sedes detalladas tienen precedencia sobre los conteos.
+        "sites": detailed_sites,
         "workloads": [],
         "pending_data": (
             [parsed["note"]] if parsed.get("note") else []

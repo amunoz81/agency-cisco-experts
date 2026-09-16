@@ -21,6 +21,11 @@ offline (toggle en el formulario) es instantánea y sin costo.
 - **Situación del cliente**
 - **Problema / necesidad** (obligatorio)
 - **Productos Cisco actuales y vigentes** (uno por línea o coma-separados)
+- **N.º de sedes / datacenters** y **usuarios remotos** (conteos rápidos)
+- **Proveedores de nube existentes** (AWS/Azure/GCP/Oracle/IBM/privada)
+- **Sedes detalladas (opcional)**: nombre, tipo (campus/planta/datacenter/sucursal)
+  y usuarios por sede — tienen precedencia sobre los conteos y afinan el
+  dimensionamiento por ubicación
 - **Base instalada interna** (subida de `.xlsx`, `.csv` o `.pdf` — los agentes la
   leen como inventario; ver `web/parsing.py`)
 - Toggle **offline** (sin costo de LLM)
@@ -48,6 +53,4 @@ y reemplazará el placeholder automáticamente.
 
 - La ejecución es síncrona (con overlay de progreso). Para cargas altas, mover a
   una cola/-tarea en background y polling.
-- El formulario no captura sedes estructuradas (el conteo de sedes puede salir en
-  0 en el resumen offline); se puede añadir un bloque de sedes si se requiere.
 - Los archivos generados se guardan en `output/web/` y se sirven por `/files/`.

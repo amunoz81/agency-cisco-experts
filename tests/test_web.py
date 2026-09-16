@@ -47,6 +47,33 @@ def test_proposal_endpoint_offline_generates():
     assert dl.status_code == 200
 
 
+def test_proposal_with_detailed_sites():
+    import json
+
+    sites = [
+        {"name": "HQ Cali", "kind": "campus", "users": 800},
+        {"name": "Planta Yumbo", "kind": "planta", "users": 350},
+        {"name": "DC Principal", "kind": "datacenter"},
+    ]
+    r = client.post(
+        "/api/proposal",
+        data={
+            "customer": "Fanalca",
+            "vertical": "manufacturing",
+            "problem": "Modernizar red y seguridad.",
+            "sites_json": json.dumps(sites),
+            "lang": "es",
+            "offline": "true",
+        },
+    )
+    assert r.status_code == 200
+    data = r.json()
+    assert data["ok"] is True
+    # Planta => IT/OT; Datacenter => Data Center/AI.
+    assert "it_ot" in data["specialists"]
+    assert "datacenter_ai" in data["specialists"]
+
+
 def test_parse_install_base_csv():
     csv_bytes = b"SKU,Descripcion,Cantidad\nC9300-48P,Catalyst 9300,10\nISE-VM,ISE,2\n"
     parsed = parse_install_base("base.csv", csv_bytes)

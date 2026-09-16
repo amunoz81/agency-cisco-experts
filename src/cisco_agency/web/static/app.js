@@ -40,6 +40,51 @@ function setLang(lang) {
   localStorage.setItem("lang", lang);
   applyI18n();
   loadVerticals();
+  refreshSiteTypeLabels();
+}
+
+// Detailed sites
+const SITE_KINDS = ["campus", "planta", "datacenter", "sucursal"];
+
+function siteTypeOptions(selected) {
+  const labels = window.I18N[LANG].site_types || {};
+  return SITE_KINDS.map(
+    (k) => `<option value="${k}"${k === selected ? " selected" : ""}>${labels[k] || k}</option>`
+  ).join("");
+}
+
+function addSiteRow(data) {
+  data = data || {};
+  const row = document.createElement("div");
+  row.className = "site-row";
+  row.innerHTML = `
+    <input type="text" class="s-name" placeholder="${t("site_name_ph")}" value="${data.name || ""}" />
+    <select class="s-kind">${siteTypeOptions(data.kind || "campus")}</select>
+    <input type="number" min="0" class="s-users" placeholder="${t("site_users_ph")}" value="${data.users ?? ""}" />
+    <button type="button" class="rm" title="remove">×</button>`;
+  row.querySelector(".rm").addEventListener("click", () => row.remove());
+  document.getElementById("sitesList").appendChild(row);
+}
+
+function collectSites() {
+  return Array.from(document.querySelectorAll("#sitesList .site-row"))
+    .map((r) => {
+      const name = r.querySelector(".s-name").value.trim();
+      const kind = r.querySelector(".s-kind").value;
+      const usersRaw = r.querySelector(".s-users").value;
+      const site = { name: name || "Sede", kind };
+      if (usersRaw !== "") site.users = parseInt(usersRaw, 10) || 0;
+      return { site, hasData: !!name || usersRaw !== "" };
+    })
+    .filter((x) => x.hasData)
+    .map((x) => x.site);
+}
+
+function refreshSiteTypeLabels() {
+  document.querySelectorAll("#sitesList .s-kind").forEach((sel) => {
+    const cur = sel.value;
+    sel.innerHTML = siteTypeOptions(cur);
+  });
 }
 
 // Dropzone
@@ -114,6 +159,7 @@ async function submitForm(e) {
   const clouds = Array.from(document.querySelectorAll("#cloudChecks input:checked"))
     .map((c) => c.value);
   fd.set("cloud_providers", clouds.join(", "));
+  fd.set("sites_json", JSON.stringify(collectSites()));
 
   document.getElementById("overlay").hidden = false;
   startSteps();
@@ -138,5 +184,6 @@ document.addEventListener("DOMContentLoaded", () => {
   applyI18n();
   loadVerticals();
   initDropzone();
+  document.getElementById("addSite").addEventListener("click", () => addSiteRow());
   document.getElementById("oppForm").addEventListener("submit", submitForm);
 });

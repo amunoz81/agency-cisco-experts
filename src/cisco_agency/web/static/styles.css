@@ -71,6 +71,25 @@ body {
 .field { margin-bottom: 16px; }
 .field label { display: block; font-weight: 700; font-size: 13px; margin-bottom: 6px; color: #23364d; }
 .field .req { color: var(--secondary); }
+.sites-head { display: flex; align-items: center; justify-content: space-between; }
+.mini-btn {
+  border: 1px solid var(--secondary); background: #fff; color: var(--secondary);
+  border-radius: 999px; padding: 5px 12px; font-weight: 700; font-size: 12px; cursor: pointer;
+}
+.mini-btn:hover { background: rgba(27,160,215,.08); }
+.site-row {
+  display: grid; grid-template-columns: 1.4fr 1.1fr .8fr auto; gap: 8px;
+  align-items: center; margin-top: 8px;
+}
+.site-row input, .site-row select {
+  width: 100%; border: 1px solid var(--line); border-radius: 9px; padding: 9px 10px;
+  font-size: 13px; font-family: inherit; background: #fbfdff;
+}
+.site-row .rm {
+  border: 0; background: #fdeceb; color: #b3261e; width: 34px; height: 34px;
+  border-radius: 9px; cursor: pointer; font-size: 16px; font-weight: 800; line-height: 1;
+}
+@media (max-width: 520px) { .site-row { grid-template-columns: 1fr 1fr; } }
 .field-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 @media (max-width: 520px) { .field-row { grid-template-columns: 1fr; } }
 .checks { display: flex; flex-wrap: wrap; gap: 8px 16px; }
