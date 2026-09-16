@@ -42,9 +42,13 @@ def test_proposal_endpoint_offline_generates():
     assert data["html_file"]
     assert "security" in data["specialists"]
     assert "it_ot" in data["specialists"]
-    # El archivo generado se puede descargar.
-    dl = client.get(f"/files/{data['html_file']}")
-    assert dl.status_code == 200
+    # Exportación a Office disponible (extra web instalado).
+    assert data["pptx_file"] and data["pptx_file"].endswith(".pptx")
+    assert data["docx_file"] and data["docx_file"].endswith(".docx")
+    # Los archivos generados se pueden descargar.
+    for key in ("html_file", "pptx_file", "docx_file"):
+        dl = client.get(f"/files/{data[key]}")
+        assert dl.status_code == 200
 
 
 def test_proposal_with_detailed_sites():

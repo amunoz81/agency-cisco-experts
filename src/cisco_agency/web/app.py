@@ -65,12 +65,15 @@ def _run_pipeline(raw: dict, offline: bool) -> dict:
     final = graph.invoke({"raw_input": raw, "offline": offline})
     report = run_report(final, duration_s=time.perf_counter() - t0)
     proposal = final.get("proposal", {})
-    html_path = proposal.get("html")
-    pdf_path = proposal.get("pdf")
+    def _name(p):
+        return Path(p).name if p else None
+
     return {
         "ok": True,
-        "html_file": Path(html_path).name if html_path else None,
-        "pdf_file": Path(pdf_path).name if pdf_path else None,
+        "html_file": _name(proposal.get("html")),
+        "pdf_file": _name(proposal.get("pdf")),
+        "pptx_file": _name(proposal.get("pptx")),
+        "docx_file": _name(proposal.get("docx")),
         "pdf_error": proposal.get("pdf_error"),
         "metrics": report,
         "specialists": report.get("specialists", []),

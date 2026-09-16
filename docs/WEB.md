@@ -32,7 +32,15 @@ offline (toggle en el formulario) es instantánea y sin costo.
 
 El backend mapea el formulario a una `Opportunity`, infiere el alcance
 (especialistas) a partir del texto libre y ejecuta el grafo. Devuelve métricas,
-los especialistas convocados y la propuesta (HTML embebido + descarga PDF/HTML).
+los especialistas convocados y la propuesta en **cuatro formatos** descargables:
+**PDF**, **PowerPoint** (deck ejecutivo), **Word** (documento técnico) y **HTML**.
+
+La exportación a Office la genera `reporting/office.py` (python-pptx / python-docx,
+incluidos en el extra `web`/`office`). El PPTX es un deck ejecutivo (portada,
+STAR, alcance, arquitecturas, integración, BOM, caso financiero, revisión); el
+DOCX es el documento técnico completo (blueprint por arquitectura con el formato
+común, tablas de BOM y financiero, evidencia y pendientes). Ambos usan la paleta
+Cisco. También se generan al correr `cisco-agency run` (CLI).
 
 ## Despliegue con Docker (para compartir con el equipo)
 

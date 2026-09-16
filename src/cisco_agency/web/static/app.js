@@ -129,6 +129,8 @@ function renderResult(data) {
   const chips = (data.specialists || [])
     .map((s) => `<span class="chip">${s.replace(/_/g, " ")}</span>`).join("");
   const pdf = data.pdf_file ? `<a class="primary" href="/files/${data.pdf_file}" target="_blank">⬇ ${t("open_pdf")}</a>` : "";
+  const pptx = data.pptx_file ? `<a href="/files/${data.pptx_file}">⬇ ${t("open_pptx")}</a>` : "";
+  const docx = data.docx_file ? `<a href="/files/${data.docx_file}">⬇ ${t("open_docx")}</a>` : "";
   const html = data.html_file ? `<a href="/files/${data.html_file}" target="_blank">↗ ${t("open_html")}</a>` : "";
   const note = data.install_base_note ? `<div class="note">⚠ ${data.install_base_note}</div>` : "";
   document.getElementById("resultsBody").innerHTML = `
@@ -140,7 +142,7 @@ function renderResult(data) {
     </div>
     <div class="l" style="font-size:11px;color:#5b6b7a;text-transform:uppercase;margin-bottom:6px">${t("specialists")}</div>
     <div class="chips">${chips}</div>
-    <div class="actions">${pdf}${html}</div>
+    <div class="actions">${pdf}${pptx}${docx}${html}</div>
     ${data.html_file ? `<iframe class="preview" src="/files/${data.html_file}"></iframe>` : ""}
     ${note}
   `;

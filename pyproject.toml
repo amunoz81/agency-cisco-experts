@@ -43,6 +43,11 @@ ingest = [
     # Para enriquecer el corpus con texto completo de CVDs descargados (PDF).
     "pypdf>=5.1",
 ]
+office = [
+    # Exportación a PowerPoint / Word.
+    "python-pptx>=0.6.23",
+    "python-docx>=1.1",
+]
 web = [
     # Interfaz web (formulario + generación de propuesta).
     "fastapi>=0.115",
@@ -50,6 +55,8 @@ web = [
     "python-multipart>=0.0.12",
     "openpyxl>=3.1",
     "pypdf>=5.1",
+    "python-pptx>=0.6.23",
+    "python-docx>=1.1",
 ]
 
 [project.scripts]

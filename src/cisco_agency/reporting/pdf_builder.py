@@ -176,6 +176,29 @@ def build_proposal(
     html_path.write_text(html, encoding="utf-8")
 
     result = {"html": str(html_path), "pdf": None, "pdf_engine": None, "pdf_error": None}
+
+    # Exportación a PowerPoint / Word (best-effort; requiere el extra office/web).
+    result["pptx"] = None
+    result["docx"] = None
+    result["office_error"] = None
+    try:
+        from .office import build_docx, build_pptx
+
+        common = dict(
+            opportunity=opportunity, scope_plan=scope_plan, findings=findings,
+            integration=integration, bom=bom, financial_case=financial_case,
+            review=review, verification=verification, fiscal_year=fiscal_year,
+            out_dir=out_dir, basename=basename, synthesis=synthesis,
+        )
+        result["pptx"] = build_pptx(**common)
+        result["docx"] = build_docx(**common, critique=critique)
+    except ImportError:
+        result["office_error"] = (
+            "Exportación a PPTX/DOCX no disponible. Instala: pip install -e '.[office]'."
+        )
+    except Exception as exc:  # pragma: no cover - depende del entorno
+        result["office_error"] = f"No se pudo exportar a Office: {exc}"
+
     pdf_path = out / f"propuesta_{slug}.pdf"
 
     # Motor 1 (máxima fidelidad): WeasyPrint. Requiere libs de sistema (pango/cairo).
