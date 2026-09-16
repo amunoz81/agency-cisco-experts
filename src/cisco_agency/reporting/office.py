@@ -1,7 +1,8 @@
 """Exportación de la propuesta a PowerPoint (deck ejecutivo) y Word (documento
-técnico), con la paleta Cisco. Requiere el extra `office`/`web`
-(python-pptx, python-docx). Las funciones son best-effort: si falta la librería,
-lanzan ImportError que el llamador captura.
+técnico) con la identidad Cisco: fondo navy oscuro, texto blanco, acentos verde
+y cian, logo Cisco y pie de copyright. Requiere el extra `office`/`web`
+(python-pptx, python-docx, Pillow). Best-effort: si falta una librería, lanza
+ImportError que el llamador captura.
 """
 
 from __future__ import annotations
@@ -29,13 +30,19 @@ ARCH_LABELS = {
     "collaboration": "Collaboration (Webex)",
 }
 
-# Paleta Cisco
-NAVY = (0x0D, 0x1B, 0x2F)
+# Paleta Cisco (según la identidad de las láminas)
+DECK_BG = (0x0A, 0x1A, 0x2E)   # navy muy oscuro (fondo)
+CARD_BG = (0x12, 0x24, 0x3C)   # navy un poco más claro (tarjetas/filas)
+ROW_ALT = (0x0E, 0x1E, 0x34)
+GREEN = (0x1A, 0xB2, 0x4B)     # verde Cisco
+CYAN = (0x00, 0xBC, 0xEB)      # cian Cisco
+WHITE = (0xFF, 0xFF, 0xFF)
+LIGHT = (0xC7, 0xD6, 0xE5)     # texto atenuado sobre navy
 PRIMARY = (0x0D, 0x27, 0x4D)
-ACCENT = (0x00, 0xBC, 0xEB)
-SECONDARY = (0x1B, 0xA0, 0xD7)
 INK = (0x1A, 0x1A, 0x1A)
 MUTED = (0x5B, 0x6B, 0x7A)
+
+COPYRIGHT = f"© {datetime.now().year} Cisco and/or its affiliates. All rights reserved."
 
 
 def _slug(text: str) -> str:
@@ -73,8 +80,30 @@ def _star(opportunity: Opportunity, synthesis: ExecutiveSynthesis | None) -> dic
     }
 
 
+def _bars_png(out_dir: Path, color=WHITE) -> str:
+    """Genera (una vez) el PNG de las barras del logo Cisco, sin texto (para no
+    depender de fuentes del sistema). Devuelve la ruta."""
+    from PIL import Image, ImageDraw
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / "_cisco_bars.png"
+    if path.exists():
+        return str(path)
+    heights = [20, 36, 60, 36, 20, 36, 60, 36, 20]
+    bw, gap, x0, base = 10, 9, 6, 66
+    w = x0 * 2 + len(heights) * bw + (len(heights) - 1) * gap
+    img = Image.new("RGBA", (w, base + 10), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    x = x0
+    for h in heights:
+        d.rounded_rectangle([x, base - h, x + bw, base], radius=4, fill=(*color, 255))
+        x += bw + gap
+    img.save(path)
+    return str(path)
+
+
 # ==========================================================================
-# PowerPoint (deck ejecutivo)
+# PowerPoint (deck ejecutivo, tema Cisco oscuro)
 # ==========================================================================
 def build_pptx(
     *,
@@ -93,7 +122,11 @@ def build_pptx(
 ) -> str:
     from pptx import Presentation
     from pptx.dml.color import RGBColor
+    from pptx.enum.shapes import MSO_SHAPE
     from pptx.util import Inches, Pt
+
+    out = Path(out_dir)
+    bars_png = _bars_png(out)
 
     prs = Presentation()
     prs.slide_width = Inches(13.333)
@@ -104,26 +137,29 @@ def build_pptx(
     def rgb(c):
         return RGBColor(*c)
 
-    def rect(slide, x, y, w, h, color, line=None):
-        shp = slide.shapes.add_shape(1, x, y, w, h)  # 1 = rectangle
-        shp.fill.solid()
-        shp.fill.fore_color.rgb = rgb(color)
+    def box(slide, shape, x, y, w, h, fill=None, line=None, line_w=1.0):
+        shp = slide.shapes.add_shape(shape, x, y, w, h)
+        if fill is None:
+            shp.fill.background()
+        else:
+            shp.fill.solid()
+            shp.fill.fore_color.rgb = rgb(fill)
         if line is None:
             shp.line.fill.background()
         else:
             shp.line.color.rgb = rgb(line)
+            shp.line.width = Pt(line_w)
         shp.shadow.inherit = False
         return shp
 
-    def textbox(slide, x, y, w, h):
+    def tframe(slide, x, y, w, h):
         tb = slide.shapes.add_textbox(x, y, w, h)
         tb.text_frame.word_wrap = True
         return tb.text_frame
 
-    def para(tf, text, size=14, color=INK, bold=False, first=False, align=None, bullet=False):
+    def para(tf, text, size=14, color=WHITE, bold=False, first=False, bullet=False, space=2):
         p = tf.paragraphs[0] if first and not tf.paragraphs[0].runs else tf.add_paragraph()
-        if align:
-            p.alignment = align
+        p.space_after = Pt(space)
         run = p.add_run()
         run.text = ("•  " + text) if bullet else text
         run.font.size = Pt(size)
@@ -131,124 +167,137 @@ def build_pptx(
         run.font.color.rgb = rgb(color)
         return p
 
-    def bar_title(slide, title):
-        rect(slide, 0, 0, SW, Inches(1.0), NAVY)
-        rect(slide, 0, Inches(1.0), SW, Pt(4), ACCENT)
-        tf = textbox(slide, Inches(0.5), Inches(0.18), SW - Inches(1), Inches(0.7))
-        para(tf, title, size=24, color=(255, 255, 255), bold=True, first=True)
+    def background(slide):
+        box(slide, MSO_SHAPE.RECTANGLE, 0, 0, SW, SH, fill=DECK_BG)
+        # marco tenue
+        box(slide, MSO_SHAPE.RECTANGLE, Inches(0.12), Inches(0.12),
+            SW - Inches(0.24), SH - Inches(0.24), fill=None, line=(0x2A, 0x3C, 0x52), line_w=0.75)
 
-    def add_table(slide, x, y, w, h, headers, rows):
-        n = len(rows) + 1
-        tbl = slide.shapes.add_table(n, len(headers), x, y, w, h).table
+    def logo_and_footer(slide):
+        # Logo Cisco (barras + CISCO) abajo a la derecha
+        slide.shapes.add_picture(bars_png, SW - Inches(1.15), SH - Inches(0.78),
+                                 height=Inches(0.30))
+        tf = tframe(slide, SW - Inches(1.25), SH - Inches(0.5), Inches(1.1), Inches(0.3))
+        para(tf, "C I S C O", size=10, color=WHITE, bold=True, first=True)
+        # Copyright abajo a la izquierda
+        tf = tframe(slide, Inches(0.35), SH - Inches(0.5), Inches(8), Inches(0.3))
+        para(tf, COPYRIGHT, size=8, color=(0x7A, 0x8B, 0xA0), first=True)
+
+    def header(slide, title, accent=CYAN):
+        tf = tframe(slide, Inches(0.55), Inches(0.35), SW - Inches(1.1), Inches(0.8))
+        para(tf, title, size=27, color=WHITE, bold=True, first=True)
+        box(slide, MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.6), Inches(1.15),
+            Inches(1.4), Pt(5), fill=accent)
+
+    def card(slide, x, y, w, h, accent=CYAN):
+        return box(slide, MSO_SHAPE.ROUNDED_RECTANGLE, x, y, w, h,
+                   fill=CARD_BG, line=accent, line_w=1.25)
+
+    def content_slide(title, accent=CYAN):
+        s = prs.slides.add_slide(blank)
+        background(s)
+        header(s, title, accent)
+        logo_and_footer(s)
+        return s
+
+    def add_table(slide, x, y, w, headers, rows, accent=CYAN):
+        tbl = slide.shapes.add_table(len(rows) + 1, len(headers), x, y, w, Inches(0.4)).table
         for j, htext in enumerate(headers):
             c = tbl.cell(0, j)
             c.fill.solid()
-            c.fill.fore_color.rgb = rgb(PRIMARY)
-            tf = c.text_frame
-            tf.word_wrap = True
-            r = tf.paragraphs[0].add_run()
+            c.fill.fore_color.rgb = rgb(accent)
+            r = c.text_frame.paragraphs[0].add_run()
             r.text = htext
             r.font.size = Pt(11)
             r.font.bold = True
-            r.font.color.rgb = rgb((255, 255, 255))
+            r.font.color.rgb = rgb(DECK_BG)
         for i, row in enumerate(rows, start=1):
             for j, val in enumerate(row):
                 c = tbl.cell(i, j)
                 c.fill.solid()
-                c.fill.fore_color.rgb = rgb((244, 247, 251) if i % 2 else (255, 255, 255))
-                tf = c.text_frame
-                tf.word_wrap = True
-                r = tf.paragraphs[0].add_run()
+                c.fill.fore_color.rgb = rgb(CARD_BG if i % 2 else ROW_ALT)
+                r = c.text_frame.paragraphs[0].add_run()
                 r.text = str(val)
                 r.font.size = Pt(10)
-                r.font.color.rgb = rgb(INK)
+                r.font.color.rgb = rgb(WHITE)
         return tbl
 
     star = _star(opportunity, synthesis)
 
     # --- 1. Portada ---
     s = prs.slides.add_slide(blank)
-    rect(s, 0, 0, SW, SH, NAVY)
-    rect(s, Inches(0.8), Inches(2.5), Inches(1.6), Pt(6), ACCENT)
-    tf = textbox(s, Inches(0.8), Inches(1.4), SW - Inches(1.6), Inches(1.0))
-    para(tf, "PROPUESTA TÉCNICA Y COMERCIAL", size=16, color=ACCENT, bold=True, first=True)
-    tf = textbox(s, Inches(0.8), Inches(2.7), SW - Inches(1.6), Inches(1.6))
-    para(tf, opportunity.customer, size=44, color=(255, 255, 255), bold=True, first=True)
-    tf = textbox(s, Inches(0.8), Inches(4.3), SW - Inches(1.6), Inches(1.2))
+    background(s)
+    box(s, MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(2.55), Inches(1.7), Pt(7), fill=GREEN)
+    tf = tframe(s, Inches(0.8), Inches(1.5), SW - Inches(1.6), Inches(0.8))
+    para(tf, "PROPUESTA TÉCNICA Y COMERCIAL", size=16, color=CYAN, bold=True, first=True)
+    tf = tframe(s, Inches(0.8), Inches(2.8), SW - Inches(1.6), Inches(1.6))
+    para(tf, opportunity.customer, size=46, color=WHITE, bold=True, first=True)
+    tf = tframe(s, Inches(0.8), Inches(4.5), SW - Inches(1.6), Inches(1.2))
     sub = f"Arquitectura Cisco de extremo a extremo · {fiscal_year}"
     if opportunity.industry:
         sub += f" · {opportunity.industry}"
-    para(tf, sub, size=16, color=(207, 230, 245), first=True)
+    para(tf, sub, size=16, color=LIGHT, first=True)
     para(tf, "Agencia de Expertos Cisco · " + datetime.now().strftime("%Y-%m-%d"),
-         size=12, color=(150, 175, 200))
+         size=12, color=(0x7A, 0x8B, 0xA0))
+    logo_and_footer(s)
 
-    # --- 2. Resumen ejecutivo (STAR) ---
-    s = prs.slides.add_slide(blank)
-    bar_title(s, "Resumen ejecutivo")
-    tf = textbox(s, Inches(0.5), Inches(1.3), SW - Inches(1), Inches(5.8))
+    # --- 2. Resumen ejecutivo ---
+    s = content_slide("Resumen ejecutivo", GREEN)
+    card(s, Inches(0.5), Inches(1.45), SW - Inches(1), Inches(5.15), GREEN)
+    tf = tframe(s, Inches(0.8), Inches(1.65), SW - Inches(1.6), Inches(4.8))
     if star["summary"]:
-        para(tf, star["summary"], size=14, color=PRIMARY, bold=True, first=True)
-    para(tf, "Situación: " + star["situation"], size=13, bullet=True)
+        para(tf, star["summary"], size=14, color=CYAN, bold=True, first=True)
+    para(tf, "Situación: " + star["situation"], size=13, bullet=True, first=not star["summary"])
     para(tf, "Tarea: " + star["task"], size=13, bullet=True)
     para(tf, "Acción: " + star["action"], size=13, bullet=True)
     para(tf, "Resultado: " + star["result"], size=13, bullet=True)
-    if star["contradictions"]:
-        para(tf, "Contradicciones resueltas:", size=13, color=SECONDARY, bold=True)
-        for c in star["contradictions"]:
-            para(tf, c, size=12, bullet=True)
+    for c in star["contradictions"][:3]:
+        para(tf, "Contradicción resuelta: " + c, size=12, color=LIGHT, bullet=True)
 
     # --- 3. Alcance ---
-    s = prs.slides.add_slide(blank)
-    bar_title(s, "Alcance de la solución")
+    s = content_slide("Alcance de la solución", CYAN)
     rows = [[ARCH_LABELS.get(a, a), _cls_label(c)] for a, c in scope_plan.items()]
-    add_table(s, Inches(0.5), Inches(1.4), Inches(8.5), Inches(0.4),
-              ["Arquitectura", "Clasificación"], rows)
+    add_table(s, Inches(0.6), Inches(1.5), Inches(8.6), ["Arquitectura", "Clasificación"], rows)
 
-    # --- 4. Arquitecturas de la solución ---
-    s = prs.slides.add_slide(blank)
-    bar_title(s, "Arquitecturas de la solución")
-    tf = textbox(s, Inches(0.5), Inches(1.3), SW - Inches(1), Inches(5.9))
+    # --- 4. Arquitecturas ---
+    s = content_slide("Arquitecturas de la solución", GREEN)
+    card(s, Inches(0.5), Inches(1.45), SW - Inches(1), Inches(5.15), GREEN)
+    tf = tframe(s, Inches(0.8), Inches(1.6), SW - Inches(1.6), Inches(4.9))
     first = True
     for f in findings:
-        label = ARCH_LABELS.get(f.architecture.value, f.architecture.value)
-        para(tf, label, size=14, color=SECONDARY, bold=True, first=first)
+        para(tf, ARCH_LABELS.get(f.architecture.value, f.architecture.value),
+             size=14, color=CYAN, bold=True, first=first, space=0)
         first = False
-        para(tf, f.customer_need, size=11, color=MUTED)
-        para(tf, "→ " + f.proposed_solution[:180], size=11)
+        para(tf, f.customer_need, size=10, color=LIGHT, space=0)
+        para(tf, "→ " + f.proposed_solution[:150], size=10, space=6)
 
     # --- 5. Integración ---
-    s = prs.slides.add_slide(blank)
-    bar_title(s, "Integración entre arquitecturas")
-    tf = textbox(s, Inches(0.5), Inches(1.3), SW - Inches(1), Inches(5.9))
-    first = True
-    for x in integration.get("data_flows", []):
-        para(tf, x, size=12, bullet=True, first=first)
-        first = False
-    for x in integration.get("policy_enforcement_points", []):
-        para(tf, x, size=12, bullet=True, first=first)
-        first = False
-    if first:
-        para(tf, "Diseño integrado con identidad y política consistentes.", size=12, first=True)
+    s = content_slide("Integración entre arquitecturas", CYAN)
+    card(s, Inches(0.5), Inches(1.45), SW - Inches(1), Inches(5.15), CYAN)
+    tf = tframe(s, Inches(0.8), Inches(1.65), SW - Inches(1.6), Inches(4.8))
+    items = (integration.get("data_flows", []) + integration.get("policy_enforcement_points", []))
+    if not items:
+        items = ["Diseño integrado con identidad y política consistentes."]
+    for i, x in enumerate(items):
+        para(tf, x, size=12, bullet=True, first=(i == 0))
 
-    # --- 6. BOM (resumen) ---
-    s = prs.slides.add_slide(blank)
-    bar_title(s, "BOM y licenciamiento (resumen)")
+    # --- 6. BOM ---
+    s = content_slide("BOM y licenciamiento (resumen)", GREEN)
     hw = sum(1 for line in bom.lines if not line.is_license)
     lic = sum(1 for line in bom.lines if line.is_license)
-    tf = textbox(s, Inches(0.5), Inches(1.25), SW - Inches(1), Inches(0.5))
+    tf = tframe(s, Inches(0.55), Inches(1.3), SW - Inches(1.1), Inches(0.4))
     para(tf, f"{len(bom.lines)} líneas · {hw} hardware · {lic} licencias/suscripciones",
-         size=13, color=PRIMARY, bold=True, first=True)
+         size=13, color=CYAN, bold=True, first=True)
     rows = [
-        [ln.sku or "—", ln.description[:46], int(ln.quantity),
+        [ln.sku or "—", ln.description[:44], int(ln.quantity),
          ARCH_LABELS.get(ln.architecture.value, ln.architecture.value)]
-        for ln in bom.lines[:12]
+        for ln in bom.lines[:11]
     ]
-    add_table(s, Inches(0.5), Inches(1.9), Inches(12.3), Inches(0.4),
-              ["SKU", "Descripción", "Cant.", "Arquitectura"], rows)
+    add_table(s, Inches(0.55), Inches(1.85), Inches(12.2),
+              ["SKU", "Descripción", "Cant.", "Arquitectura"], rows, GREEN)
 
     # --- 7. Caso financiero ---
-    s = prs.slides.add_slide(blank)
-    bar_title(s, "Caso financiero")
+    s = content_slide("Caso financiero", CYAN)
     scen = {sc.name: sc for sc in financial_case.scenarios}
     rows = []
     for name, r in financial_case.results.items():
@@ -262,27 +311,26 @@ def build_pptx(
             (f"{r.get('payback_years')} años"
              if r.get("payback_years", -1) >= 0 else "> horizonte"),
         ])
-    add_table(s, Inches(0.5), Inches(1.5), Inches(9.5), Inches(0.4),
+    add_table(s, Inches(0.6), Inches(1.5), Inches(9.6),
               ["Escenario", "CAPEX", "TCO", "ROI", "NPV", "Payback"], rows)
-    tf = textbox(s, Inches(0.5), Inches(3.8), SW - Inches(1), Inches(3.2))
-    para(tf, f"Moneda: {financial_case.currency}. Supuestos:", size=12, color=MUTED, first=True)
+    tf = tframe(s, Inches(0.6), Inches(3.7), SW - Inches(1.2), Inches(2.9))
+    para(tf, f"Moneda: {financial_case.currency}. Supuestos:", size=12, color=LIGHT, first=True)
     for a in financial_case.assumptions:
-        para(tf, a, size=11, color=MUTED, bullet=True)
+        para(tf, a, size=10, color=LIGHT, bullet=True)
 
     # --- 8. Revisión y próximos pasos ---
-    s = prs.slides.add_slide(blank)
-    bar_title(s, "Revisión técnica y próximos pasos")
-    tf = textbox(s, Inches(0.5), Inches(1.3), SW - Inches(1), Inches(5.9))
+    s = content_slide("Revisión técnica y próximos pasos", GREEN)
+    card(s, Inches(0.5), Inches(1.45), SW - Inches(1), Inches(5.15), GREEN)
+    tf = tframe(s, Inches(0.8), Inches(1.65), SW - Inches(1.6), Inches(4.8))
     estado = "APROBADA (sin bloqueantes)" if review.passed else "CON BLOQUEANTES"
-    para(tf, "Estado de la revisión: " + estado, size=14, color=PRIMARY, bold=True, first=True)
-    cov = verification.get("coverage_ratio", 0)
-    para(tf, f"Cobertura de evidencia verificada: {cov:.0%}", size=12)
+    para(tf, "Estado de la revisión: " + estado, size=14, color=CYAN, bold=True, first=True)
+    para(tf, f"Cobertura de evidencia verificada: {verification.get('coverage_ratio', 0):.0%}",
+         size=12, color=LIGHT)
     if opportunity.pending_data:
-        para(tf, "Datos pendientes del cliente:", size=13, color=SECONDARY, bold=True)
+        para(tf, "Datos pendientes del cliente:", size=13, color=GREEN, bold=True)
         for d in opportunity.pending_data:
             para(tf, d, size=11, bullet=True)
 
-    out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     path = out / f"propuesta_{_slug(basename or opportunity.customer)}.pptx"
     prs.save(str(path))
@@ -290,7 +338,7 @@ def build_pptx(
 
 
 # ==========================================================================
-# Word (documento técnico)
+# Word (documento técnico con banner Cisco)
 # ==========================================================================
 def build_docx(
     *,
@@ -309,11 +357,25 @@ def build_docx(
     critique: CritiqueResult | None = None,
 ) -> str:
     from docx import Document
-    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+    from docx.shared import Inches as DInches
     from docx.shared import Pt, RGBColor
+
+    out = Path(out_dir)
+    bars_png = _bars_png(out)
 
     doc = Document()
     navy = RGBColor(*PRIMARY)
+
+    def _hex(c):
+        return "{:02X}{:02X}{:02X}".format(*c)
+
+    def shade(cell, color):
+        shd = OxmlElement("w:shd")
+        shd.set(qn("w:val"), "clear")
+        shd.set(qn("w:fill"), _hex(color))
+        cell._tc.get_or_add_tcPr().append(shd)
 
     def h(text, level=1):
         p = doc.add_heading(text, level=level)
@@ -323,27 +385,35 @@ def build_docx(
 
     def kv(label, value):
         p = doc.add_paragraph()
-        r = p.add_run(label + ": ")
-        r.bold = True
+        p.add_run(label + ": ").bold = True
         p.add_run(str(value))
         return p
 
     star = _star(opportunity, synthesis)
 
-    # Portada
-    title = doc.add_paragraph()
-    title.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    r = title.add_run(opportunity.customer)
-    r.bold = True
-    r.font.size = Pt(28)
-    r.font.color.rgb = navy
-    sub = doc.add_paragraph()
-    rs = sub.add_run(
-        "Propuesta técnica y comercial · Arquitectura Cisco de extremo a extremo · "
-        f"{fiscal_year}"
+    # --- Banner Cisco (navy con logo + título) ---
+    banner = doc.add_table(rows=1, cols=1)
+    cell = banner.rows[0].cells[0]
+    shade(cell, DECK_BG)
+    p = cell.paragraphs[0]
+    p.add_run().add_picture(bars_png, height=DInches(0.34))
+    rc = p.add_run("  CISCO")
+    rc.bold = True
+    rc.font.size = Pt(16)
+    rc.font.color.rgb = RGBColor(*WHITE)
+    p2 = cell.add_paragraph()
+    r2 = p2.add_run(opportunity.customer)
+    r2.bold = True
+    r2.font.size = Pt(26)
+    r2.font.color.rgb = RGBColor(*WHITE)
+    p3 = cell.add_paragraph()
+    r3 = p3.add_run(
+        f"Propuesta técnica y comercial · Arquitectura Cisco de extremo a extremo · {fiscal_year}"
     )
-    rs.font.size = Pt(12)
-    rs.font.color.rgb = RGBColor(*MUTED)
+    r3.font.size = Pt(11)
+    r3.font.color.rgb = RGBColor(*CYAN)
+
+    doc.add_paragraph()
     if opportunity.industry:
         kv("Industria", opportunity.industry)
     doc.add_paragraph(datetime.now().strftime("%Y-%m-%d")).runs[0].font.color.rgb = RGBColor(*MUTED)
@@ -361,12 +431,19 @@ def build_docx(
         for c in star["contradictions"]:
             doc.add_paragraph(c, style="List Bullet")
 
+    def styled_table(headers):
+        t = doc.add_table(rows=1, cols=len(headers))
+        t.style = "Light Grid Accent 1"
+        for j, htext in enumerate(headers):
+            shade(t.rows[0].cells[j], PRIMARY)
+            run = t.rows[0].cells[j].paragraphs[0].add_run(htext)
+            run.bold = True
+            run.font.color.rgb = RGBColor(*WHITE)
+        return t
+
     # 2. Alcance
     h("2. Alcance de la solución", 1)
-    t = doc.add_table(rows=1, cols=2)
-    t.style = "Light Grid Accent 1"
-    t.rows[0].cells[0].paragraphs[0].add_run("Arquitectura").bold = True
-    t.rows[0].cells[1].paragraphs[0].add_run("Clasificación").bold = True
+    t = styled_table(["Arquitectura", "Clasificación"])
     for a, c in scope_plan.items():
         cells = t.add_row().cells
         cells[0].text = ARCH_LABELS.get(a, a)
@@ -388,8 +465,7 @@ def build_docx(
         if f.risks_pending:
             kv("Riesgos y pendientes", "; ".join(f.risks_pending))
         if f.evidence:
-            p = doc.add_paragraph()
-            p.add_run("Evidencia:").bold = True
+            doc.add_paragraph().add_run("Evidencia:").bold = True
             for e in f.evidence:
                 line = f"{e.claim} — {e.source}"
                 if e.version:
@@ -412,10 +488,7 @@ def build_docx(
 
     # 5. BOM
     h("5. BOM y licenciamiento (consolidado)", 1)
-    t = doc.add_table(rows=1, cols=6)
-    t.style = "Light Grid Accent 1"
-    for j, htext in enumerate(["SKU", "Descripción", "Cant.", "Arquitectura", "Tipo", "Gestión"]):
-        t.rows[0].cells[j].paragraphs[0].add_run(htext).bold = True
+    t = styled_table(["SKU", "Descripción", "Cant.", "Arquitectura", "Tipo", "Gestión"])
     for ln in bom.lines:
         cells = t.add_row().cells
         cells[0].text = ln.sku or "—"
@@ -424,18 +497,11 @@ def build_docx(
         cells[3].text = ARCH_LABELS.get(ln.architecture.value, ln.architecture.value)
         cells[4].text = "Licencia" if ln.is_license else "Hardware"
         cells[5].text = ln.management or "—"
-    doc.add_paragraph(
-        "Cantidades de ejemplo para dimensionamiento inicial; SKU y precios "
-        "finales se confirman con cotización autorizada."
-    ).runs[0].font.color.rgb = RGBColor(*MUTED)
 
     # 6. Caso financiero
     h("6. Caso financiero", 1)
     scen = {sc.name: sc for sc in financial_case.scenarios}
-    t = doc.add_table(rows=1, cols=6)
-    t.style = "Light Grid Accent 1"
-    for j, htext in enumerate(["Escenario", "CAPEX", "TCO", "ROI", "NPV", "Payback"]):
-        t.rows[0].cells[j].paragraphs[0].add_run(htext).bold = True
+    t = styled_table(["Escenario", "CAPEX", "TCO", "ROI", "NPV", "Payback"])
     for name, r in financial_case.results.items():
         sc = scen.get(name)
         cells = t.add_row().cells
@@ -448,8 +514,7 @@ def build_docx(
             f"{r.get('payback_years')} años" if r.get("payback_years", -1) >= 0 else "> horizonte"
         )
     kv("Moneda", financial_case.currency)
-    p = doc.add_paragraph()
-    p.add_run("Supuestos:").bold = True
+    doc.add_paragraph().add_run("Supuestos:").bold = True
     for a in financial_case.assumptions:
         doc.add_paragraph(a, style="List Bullet")
 
@@ -457,10 +522,7 @@ def build_docx(
     h("7. Revisión técnica independiente", 1)
     kv("Estado", "Aprobada (sin bloqueantes)" if review.passed else "Con bloqueantes")
     if review.issues:
-        t = doc.add_table(rows=1, cols=3)
-        t.style = "Light Grid Accent 1"
-        for j, htext in enumerate(["Severidad", "Categoría", "Detalle"]):
-            t.rows[0].cells[j].paragraphs[0].add_run(htext).bold = True
+        t = styled_table(["Severidad", "Categoría", "Detalle"])
         for i in review.issues:
             cells = t.add_row().cells
             cells[0].text = i.severity
@@ -484,14 +546,11 @@ def build_docx(
             doc.add_paragraph(d, style="List Bullet")
 
     doc.add_paragraph()
-    foot = doc.add_paragraph(
-        "Documento generado automáticamente por la Agencia de Expertos Cisco. "
-        "Requiere revisión de un arquitecto humano antes de su entrega."
-    )
+    foot = doc.add_paragraph(COPYRIGHT + "  Documento generado por la Agencia de Expertos "
+                             "Cisco; requiere revisión de un arquitecto humano.")
     foot.runs[0].font.size = Pt(9)
     foot.runs[0].font.color.rgb = RGBColor(*MUTED)
 
-    out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     path = out / f"propuesta_{_slug(basename or opportunity.customer)}.docx"
     doc.save(str(path))
