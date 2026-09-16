@@ -1,7 +1,7 @@
 // Diccionario de traducciones EN/ES
 window.I18N = {
   en: {
-    brand_sub: "Cisco Experts Agency",
+    brand_sub: "Technical & commercial proposals",
     hero_title: "Build a technical & commercial proposal",
     hero_sub: "Fill in the client's context and let the Cisco expert agents design the end-to-end solution.",
     form_title: "Client discovery",
@@ -48,7 +48,7 @@ window.I18N = {
             "Consolidating BOM", "Building the financial case", "Reviewing & writing the proposal"],
   },
   es: {
-    brand_sub: "Agencia de Expertos Cisco",
+    brand_sub: "Propuestas técnicas y comerciales",
     hero_title: "Construye una propuesta técnica y comercial",
     hero_sub: "Completa el contexto del cliente y deja que los agentes expertos de Cisco diseñen la solución de extremo a extremo.",
     form_title: "Descubrimiento del cliente",

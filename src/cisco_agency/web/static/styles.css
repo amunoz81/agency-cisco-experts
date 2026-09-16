@@ -24,19 +24,22 @@ body {
   min-height: 100vh;
 }
 
-/* Header */
+/* Header — azul oscuro del logotipo Cisco */
+:root { --cisco-navy: #0d1b2f; }
 .site-header {
-  background: linear-gradient(120deg, var(--primary), #123a6b);
+  background: var(--cisco-navy);
   color: #fff;
   padding: 14px 0;
+  border-bottom: 3px solid var(--accent);
   box-shadow: var(--shadow);
 }
 .header-inner {
   max-width: 1100px; margin: 0 auto; padding: 0 20px;
-  display: flex; align-items: center; gap: 16px;
+  display: flex; align-items: center; gap: 14px;
 }
-.brand { display: flex; align-items: center; gap: 12px; }
-.brand-logo { height: 34px; width: auto; display: block; }
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-logo { height: 46px; width: auto; display: block; }
+.brand-divider { width: 1px; height: 34px; background: rgba(255,255,255,.22); }
 .brand-mark {
   height: 34px; width: 34px; border-radius: 8px;
   background: conic-gradient(from 200deg, var(--accent), #fff 60%, var(--secondary));
