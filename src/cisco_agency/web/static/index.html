@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cisco Experts Agency</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <!-- Coloca el logo aprobado en /static/logo.svg (o .png) para reemplazar el placeholder -->
+        <img id="brandLogo" class="brand-logo" src="/static/logo.svg" alt="logo"
+             onerror="this.style.display='none';document.getElementById('brandMark').style.display='grid';" />
+        <div id="brandMark" class="brand-mark" style="display:none">CX</div>
+        <div class="brand-text">
+          <div class="t1">Cisco Experts Agency</div>
+          <div class="t2" data-i18n="brand_sub">Agencia de Expertos Cisco</div>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <div class="lang-switch">
+        <button id="lang-en" onclick="setLang('en')">EN</button>
+        <button id="lang-es" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="hero">
+      <h1 data-i18n="hero_title">Construye una propuesta técnica y comercial</h1>
+      <p data-i18n="hero_sub">Completa el contexto del cliente y deja que los agentes diseñen la solución.</p>
+    </div>
+
+    <div class="grid">
+      <!-- FORM -->
+      <section class="card">
+        <h2 data-i18n="form_title">Descubrimiento del cliente</h2>
+        <p class="sub" data-i18n="form_sub">Los campos con * son obligatorios.</p>
+
+        <form id="oppForm">
+          <div class="field">
+            <label><span data-i18n="f_customer">Nombre del cliente</span> <span class="req">*</span></label>
+            <input type="text" name="customer" id="customer" required data-i18n-ph="f_customer_ph" />
+          </div>
+
+          <div class="field">
+            <label><span data-i18n="f_vertical">Vertical de industria</span> <span class="req">*</span></label>
+            <select name="vertical" id="vertical" required></select>
+          </div>
+
+          <div class="field">
+            <label data-i18n="f_situation">Situación del cliente</label>
+            <textarea name="situation" id="situation" data-i18n-ph="f_situation_ph"></textarea>
+          </div>
+
+          <div class="field">
+            <label><span data-i18n="f_problem">Problema / necesidad</span> <span class="req">*</span></label>
+            <textarea name="problem" id="problem" required data-i18n-ph="f_problem_ph"></textarea>
+          </div>
+
+          <div class="field">
+            <label data-i18n="f_products">Productos Cisco actuales y vigentes</label>
+            <textarea name="current_products" id="current_products" data-i18n-ph="f_products_ph"></textarea>
+          </div>
+
+          <div class="field">
+            <label data-i18n="f_install">Base instalada interna de Cisco</label>
+            <div class="dropzone" id="dropzone">
+              <div class="big">📎</div>
+              <div><strong data-i18n="dz_title">Arrastra tu Excel o PDF aquí</strong></div>
+              <div class="dz-sub" data-i18n="dz_sub">o haz clic para buscar — .xlsx, .csv, .pdf</div>
+              <div class="file" id="fileName" hidden></div>
+              <input type="file" id="install_base" name="install_base"
+                     accept=".xlsx,.xlsm,.csv,.pdf,.txt,.tsv" hidden />
+            </div>
+          </div>
+
+          <div class="field switch-row">
+            <label class="switch">
+              <input type="checkbox" id="offline" name="offline" />
+              <span class="slider"></span>
+            </label>
+            <span data-i18n="f_offline">Modo offline (sin costo de LLM)</span>
+          </div>
+
+          <button type="submit" class="btn" id="submitBtn" data-i18n="submit">Generar propuesta</button>
+          <div id="formErr" class="err" style="margin-top:10px" hidden></div>
+        </form>
+      </section>
+
+      <!-- RESULTS -->
+      <section class="card results">
+        <h2 data-i18n="results_title">Propuesta</h2>
+        <div id="resultsBody">
+          <div class="placeholder">
+            <div class="big">🧩</div>
+            <p data-i18n="results_ph">Aquí aparecerá tu propuesta generada.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer data-i18n="footer">Borrador autogenerado — requiere revisión humana antes de entregar.</footer>
+
+  <!-- Loading overlay -->
+  <div class="overlay" id="overlay" hidden>
+    <div class="box">
+      <div class="spinner"></div>
+      <div style="font-weight:800;color:#0d274d" data-i18n="loading_title">Los agentes están trabajando…</div>
+      <div class="step" id="loadingStep"></div>
+    </div>
+  </div>
+
+  <script src="/static/i18n.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

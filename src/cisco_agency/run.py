@@ -176,6 +176,31 @@ def ingest_cvd(
 
 
 @app.command()
+def serve(
+    host: str = typer.Option("127.0.0.1", help="Host de escucha."),
+    port: int = typer.Option(8000, help="Puerto."),
+    reload: bool = typer.Option(False, help="Auto-reload (desarrollo)."),
+) -> None:
+    """Levanta la interfaz web (formulario + generación de propuesta)."""
+    try:
+        import uvicorn  # noqa: F401
+    except ImportError:
+        console.print(
+            "[red]Falta el extra web.[/red] Instala: pip install -e '.[web]'"
+        )
+        raise typer.Exit(code=1) from None
+    console.print(
+        Panel.fit(
+            f"[bold]Cisco Experts Agency — Web[/bold]\nhttp://{host}:{port}",
+            border_style="cyan",
+        )
+    )
+    import uvicorn
+
+    uvicorn.run("cisco_agency.web.app:app", host=host, port=port, reload=reload)
+
+
+@app.command()
 def info() -> None:
     """Muestra la configuración efectiva."""
     s = get_settings()

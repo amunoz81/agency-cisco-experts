@@ -77,6 +77,19 @@ Trust, ACI, DC Blueprint for AI/ML, Industrial Automation, Collaboration PA…).
 Amplíalo agregando entradas al YAML; para texto completo, descarga el PDF a
 `knowledge/cvd_downloads/` e instala el extra `pip install -e '.[ingest]'`.
 
+## Interfaz web (formulario → propuesta)
+
+Un formulario moderno (EN/ES) captura el contexto del cliente, permite **subir la
+base instalada** (Excel/PDF/CSV) y dispara a los agentes:
+
+```bash
+pip install -e '.[web]'
+cisco-agency serve      # http://127.0.0.1:8000   (o: make web)
+```
+
+Ver [docs/WEB.md](docs/WEB.md). El logotipo de Cisco (marca de terceros) no se
+incluye: coloca el aprobado en `src/cisco_agency/web/static/logo.svg`.
+
 ## Roles de la agencia
 
 | Rol | Responsabilidad |

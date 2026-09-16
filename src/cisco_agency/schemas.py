@@ -132,10 +132,15 @@ class Opportunity(BaseModel):
 
     customer: str
     industry: str | None = None
+    situation: str | None = Field(default=None, description="Situación actual del cliente.")
+    problem: str | None = Field(default=None, description="Problema/necesidad del cliente.")
     objectives: list[str] = Field(default_factory=list)
     sites: list[Site] = Field(default_factory=list)
     workloads: list[str] = Field(default_factory=list)
     inventory: list[str] = Field(default_factory=list)
+    current_products: list[str] = Field(
+        default_factory=list, description="Productos Cisco vigentes del cliente."
+    )
     constraints: list[str] = Field(default_factory=list)
     budget: str | None = None
     horizon_years: int = 3
