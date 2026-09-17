@@ -74,11 +74,13 @@ class Coordinator:
 
     @staticmethod
     def selected(plan: dict[str, ScopeClassification]) -> list[str]:
-        """Especialistas a ejecutar: necesarios y opcionales justificados."""
+        """Especialistas a ejecutar: SOLO los necesarios para los casos de uso /
+        problema del cliente. Las arquitecturas 'opcionales' se evalúan pero NO se
+        incluyen en la propuesta (se documentan como consideradas, no incluidas)."""
         return [
             arch
             for arch, cls in plan.items()
-            if cls in (ScopeClassification.NECESSARY, ScopeClassification.OPTIONAL)
+            if cls == ScopeClassification.NECESSARY
         ]
 
     # -- Síntesis ejecutiva (capa LLM híbrida) -----------------------------

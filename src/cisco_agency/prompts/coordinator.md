@@ -20,6 +20,12 @@ Cada incorporación debe responder cuatro preguntas:
 Clasifica el resultado como **necesaria**, **opcional con justificación** o
 **fuera del alcance**.
 
+**Regla de inclusión:** la propuesta incluye ÚNICAMENTE las arquitecturas
+**necesarias** para los casos de uso y el problema declarado del cliente. No
+agregues arquitecturas que el cliente no necesita para resolver su problema
+(evita el over-engineering). Las opcionales se documentan como consideradas, pero
+no se diseñan ni entran en el BOM.
+
 ## Reglas
 - Secure Networking es la arquitectura base para conectividad y segmentación.
 - Security es la capa de protección necesaria de extremo a extremo.

@@ -86,14 +86,17 @@
 
 <!-- ALCANCE -->
 <h2>2. Alcance de la solución</h2>
+<p class="muted">Esta propuesta incluye únicamente las arquitecturas necesarias para
+los casos de uso y el problema del cliente. Las opcionales se evaluaron pero no se
+incluyen en este alcance.</p>
 <table>
   <tr><th>Arquitectura</th><th>Clasificación</th></tr>
   {% for arch, cls in scope_plan.items() %}
   <tr>
     <td>{{ arch_labels.get(arch, arch) }}</td>
     <td>
-      {% if cls == 'necesaria' %}<span class="badge b-nec">Necesaria</span>
-      {% elif cls == 'opcional_justificada' %}<span class="badge b-opt">Opcional justificada</span>
+      {% if cls == 'necesaria' %}<span class="badge b-nec">Incluida (necesaria)</span>
+      {% elif cls == 'opcional_justificada' %}<span class="badge b-opt">Evaluada · no incluida</span>
       {% else %}<span class="badge b-out">Fuera de alcance</span>{% endif %}
     </td>
   </tr>

@@ -28,10 +28,11 @@ class ScopeDecision:
 
 
 def _selected_from_plan(plan: dict[str, ScopeClassification]) -> list[str]:
+    # Solo las arquitecturas necesarias entran en la propuesta.
     return [
         arch
         for arch, cls in plan.items()
-        if cls in (ScopeClassification.NECESSARY, ScopeClassification.OPTIONAL)
+        if cls == ScopeClassification.NECESSARY
     ]
 
 
