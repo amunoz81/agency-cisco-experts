@@ -7,6 +7,7 @@ ImportError que el llamador captura.
 
 from __future__ import annotations
 
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -20,6 +21,17 @@ from ..schemas import (
     ScopeClassification,
     SpecialistFinding,
 )
+
+# Caracteres de control no válidos en XML (docx/pptx) — se eliminan del texto
+# generado por el LLM. Se conservan tab (\x09), salto (\x0a) y retorno (\x0d).
+_XML_CTRL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
+
+
+def _xml(value) -> str:
+    """Sanea una cadena para insertarla en un documento Office."""
+    if value is None:
+        return ""
+    return _XML_CTRL.sub("", str(value))
 
 ARCH_LABELS = {
     "secure_networking": "Secure Networking",
@@ -158,6 +170,7 @@ def build_pptx(
         return tb.text_frame
 
     def para(tf, text, size=14, color=WHITE, bold=False, first=False, bullet=False, space=2):
+        text = _xml(text)
         p = tf.paragraphs[0] if first and not tf.paragraphs[0].runs else tf.add_paragraph()
         p.space_after = Pt(space)
         run = p.add_run()
@@ -207,7 +220,7 @@ def build_pptx(
             c.fill.solid()
             c.fill.fore_color.rgb = rgb(accent)
             r = c.text_frame.paragraphs[0].add_run()
-            r.text = htext
+            r.text = _xml(htext)
             r.font.size = Pt(11)
             r.font.bold = True
             r.font.color.rgb = rgb(DECK_BG)
@@ -217,7 +230,7 @@ def build_pptx(
                 c.fill.solid()
                 c.fill.fore_color.rgb = rgb(CARD_BG if i % 2 else ROW_ALT)
                 r = c.text_frame.paragraphs[0].add_run()
-                r.text = str(val)
+                r.text = _xml(val)
                 r.font.size = Pt(10)
                 r.font.color.rgb = rgb(WHITE)
         return tbl
@@ -378,7 +391,7 @@ def build_docx(
         cell._tc.get_or_add_tcPr().append(shd)
 
     def h(text, level=1):
-        p = doc.add_heading(text, level=level)
+        p = doc.add_heading(_xml(text), level=level)
         for run in p.runs:
             run.font.color.rgb = navy
         return p
@@ -386,8 +399,11 @@ def build_docx(
     def kv(label, value):
         p = doc.add_paragraph()
         p.add_run(label + ": ").bold = True
-        p.add_run(str(value))
+        p.add_run(_xml(value))
         return p
+
+    def bullet(text):
+        return doc.add_paragraph(_xml(text), style="List Bullet")
 
     star = _star(opportunity, synthesis)
 
@@ -402,7 +418,7 @@ def build_docx(
     rc.font.size = Pt(16)
     rc.font.color.rgb = RGBColor(*WHITE)
     p2 = cell.add_paragraph()
-    r2 = p2.add_run(opportunity.customer)
+    r2 = p2.add_run(_xml(opportunity.customer))
     r2.bold = True
     r2.font.size = Pt(26)
     r2.font.color.rgb = RGBColor(*WHITE)
@@ -421,7 +437,7 @@ def build_docx(
     # 1. Resumen ejecutivo
     h("1. Resumen ejecutivo (STAR)", 1)
     if star["summary"]:
-        doc.add_paragraph(star["summary"])
+        doc.add_paragraph(_xml(star["summary"]))
     kv("Situación", star["situation"])
     kv("Tarea", star["task"])
     kv("Acción", star["action"])
@@ -429,14 +445,14 @@ def build_docx(
     if star["contradictions"]:
         h("Contradicciones resueltas por el coordinador", 2)
         for c in star["contradictions"]:
-            doc.add_paragraph(c, style="List Bullet")
+            bullet(c)
 
     def styled_table(headers):
         t = doc.add_table(rows=1, cols=len(headers))
         t.style = "Light Grid Accent 1"
         for j, htext in enumerate(headers):
             shade(t.rows[0].cells[j], PRIMARY)
-            run = t.rows[0].cells[j].paragraphs[0].add_run(htext)
+            run = t.rows[0].cells[j].paragraphs[0].add_run(_xml(htext))
             run.bold = True
             run.font.color.rgb = RGBColor(*WHITE)
         return t
@@ -446,8 +462,8 @@ def build_docx(
     t = styled_table(["Arquitectura", "Clasificación"])
     for a, c in scope_plan.items():
         cells = t.add_row().cells
-        cells[0].text = ARCH_LABELS.get(a, a)
-        cells[1].text = _cls_label(c)
+        cells[0].text = _xml(ARCH_LABELS.get(a, a))
+        cells[1].text = _xml(_cls_label(c))
 
     # 3. Blueprint por arquitectura
     h("3. Blueprint por arquitectura", 1)
@@ -471,7 +487,7 @@ def build_docx(
                 if e.version:
                     line += f" ({e.version})"
                 line += f" [{e.status.value}]"
-                doc.add_paragraph(line, style="List Bullet")
+                bullet(line)
 
     # 4. Integración
     h("4. Integración entre arquitecturas", 1)
@@ -484,19 +500,19 @@ def build_docx(
         if items:
             h(label, 2)
             for x in items:
-                doc.add_paragraph(x, style="List Bullet")
+                bullet(x)
 
     # 5. BOM
     h("5. BOM y licenciamiento (consolidado)", 1)
     t = styled_table(["SKU", "Descripción", "Cant.", "Arquitectura", "Tipo", "Gestión"])
     for ln in bom.lines:
         cells = t.add_row().cells
-        cells[0].text = ln.sku or "—"
-        cells[1].text = ln.description
-        cells[2].text = f"{int(ln.quantity)} {ln.unit}"
-        cells[3].text = ARCH_LABELS.get(ln.architecture.value, ln.architecture.value)
-        cells[4].text = "Licencia" if ln.is_license else "Hardware"
-        cells[5].text = ln.management or "—"
+        cells[0].text = _xml(ln.sku or "—")
+        cells[1].text = _xml(ln.description)
+        cells[2].text = _xml(f"{int(ln.quantity)} {ln.unit}")
+        cells[3].text = _xml(ARCH_LABELS.get(ln.architecture.value, ln.architecture.value))
+        cells[4].text = _xml("Licencia" if ln.is_license else "Hardware")
+        cells[5].text = _xml(ln.management or "—")
 
     # 6. Caso financiero
     h("6. Caso financiero", 1)
@@ -505,18 +521,18 @@ def build_docx(
     for name, r in financial_case.results.items():
         sc = scen.get(name)
         cells = t.add_row().cells
-        cells[0].text = name
-        cells[1].text = f"{sc.capex:,.0f}" if sc else "-"
-        cells[2].text = f"{r.get('tco', 0):,.0f}"
-        cells[3].text = f"{r.get('roi', 0):.0%}"
-        cells[4].text = f"{r.get('npv', 0):,.0f}"
-        cells[5].text = (
+        cells[0].text = _xml(name)
+        cells[1].text = _xml(f"{sc.capex:,.0f}" if sc else "-")
+        cells[2].text = _xml(f"{r.get('tco', 0):,.0f}")
+        cells[3].text = _xml(f"{r.get('roi', 0):.0%}")
+        cells[4].text = _xml(f"{r.get('npv', 0):,.0f}")
+        cells[5].text = _xml(
             f"{r.get('payback_years')} años" if r.get("payback_years", -1) >= 0 else "> horizonte"
         )
     kv("Moneda", financial_case.currency)
     doc.add_paragraph().add_run("Supuestos:").bold = True
     for a in financial_case.assumptions:
-        doc.add_paragraph(a, style="List Bullet")
+        bullet(a)
 
     # 7. Revisión técnica
     h("7. Revisión técnica independiente", 1)
@@ -525,14 +541,14 @@ def build_docx(
         t = styled_table(["Severidad", "Categoría", "Detalle"])
         for i in review.issues:
             cells = t.add_row().cells
-            cells[0].text = i.severity
-            cells[1].text = i.category
-            cells[2].text = i.detail
+            cells[0].text = _xml(i.severity)
+            cells[1].text = _xml(i.category)
+            cells[2].text = _xml(i.detail)
     if critique and critique.rationale:
         h("Crítica cualitativa (revisor)", 2)
-        doc.add_paragraph(critique.rationale)
+        doc.add_paragraph(_xml(critique.rationale))
         for i in critique.issues:
-            doc.add_paragraph(i, style="List Bullet")
+            bullet(i)
 
     # 8. Métricas y pendientes
     h("8. Métricas de éxito y pendientes", 1)
@@ -543,7 +559,7 @@ def build_docx(
     if opportunity.pending_data:
         h("Datos pendientes del cliente", 2)
         for d in opportunity.pending_data:
-            doc.add_paragraph(d, style="List Bullet")
+            bullet(d)
 
     doc.add_paragraph()
     foot = doc.add_paragraph(COPYRIGHT + "  Documento generado por la Agencia de Expertos "
