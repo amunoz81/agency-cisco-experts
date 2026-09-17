@@ -74,6 +74,7 @@ def _run_pipeline(raw: dict, offline: bool) -> dict:
         "pdf_file": _name(proposal.get("pdf")),
         "pptx_file": _name(proposal.get("pptx")),
         "docx_file": _name(proposal.get("docx")),
+        "drawio_file": _name(proposal.get("diagram_drawio")),
         "pdf_error": proposal.get("pdf_error"),
         "metrics": report,
         "specialists": report.get("specialists", []),

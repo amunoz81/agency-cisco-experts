@@ -103,6 +103,14 @@ incluyen en este alcance.</p>
   {% endfor %}
 </table>
 
+{% if diagram_data_uri %}
+<h3>Diagrama de arquitectura de red</h3>
+<img src="{{ diagram_data_uri }}" alt="Diagrama de arquitectura de red"
+     style="width:100%;max-width:1000px;border:1px solid var(--line);border-radius:8px;" />
+<p class="muted">Diagrama editable disponible en formato <strong>.drawio</strong>
+(diagrams.net / importable a Lucidchart, con iconos oficiales Cisco/AWS/Azure/GCP).</p>
+{% endif %}
+
 <!-- BLUEPRINT / ESPECIALISTAS -->
 <h2 class="pagebreak">3. Blueprint por arquitectura</h2>
 {% for f in findings %}

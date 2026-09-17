@@ -131,6 +131,7 @@ def build_pptx(
     out_dir: str | Path,
     basename: str | None = None,
     synthesis: ExecutiveSynthesis | None = None,
+    diagram_png: str | None = None,
 ) -> str:
     from pptx import Presentation
     from pptx.dml.color import RGBColor
@@ -272,6 +273,20 @@ def build_pptx(
     rows = [[ARCH_LABELS.get(a, a), _cls_label(c)] for a, c in scope_plan.items()]
     add_table(s, Inches(0.6), Inches(1.5), Inches(8.6), ["Arquitectura", "Clasificación"], rows)
 
+    # --- Diagrama de arquitectura de red ---
+    if diagram_png:
+        s = content_slide("Diagrama de arquitectura de red", CYAN)
+        try:
+            from PIL import Image as _Img
+
+            iw, ih = _Img.open(diagram_png).size
+            h_in = 5.3
+            w_in = h_in * iw / ih
+            s.shapes.add_picture(diagram_png, Inches((13.333 - w_in) / 2), Inches(1.45),
+                                 height=Inches(h_in))
+        except Exception:
+            pass
+
     # --- 4. Arquitecturas ---
     s = content_slide("Arquitecturas de la solución", GREEN)
     card(s, Inches(0.5), Inches(1.45), SW - Inches(1), Inches(5.15), GREEN)
@@ -368,6 +383,7 @@ def build_docx(
     basename: str | None = None,
     synthesis: ExecutiveSynthesis | None = None,
     critique: CritiqueResult | None = None,
+    diagram_png: str | None = None,
 ) -> str:
     from docx import Document
     from docx.oxml import OxmlElement
@@ -464,6 +480,18 @@ def build_docx(
         cells = t.add_row().cells
         cells[0].text = _xml(ARCH_LABELS.get(a, a))
         cells[1].text = _xml(_cls_label(c))
+
+    if diagram_png:
+        h("Diagrama de arquitectura de red", 2)
+        try:
+            doc.add_picture(diagram_png, width=DInches(6.3))
+        except Exception:
+            pass
+        p = doc.add_paragraph(
+            "Diagrama editable en formato .drawio (diagrams.net / importable a "
+            "Lucidchart, con iconos oficiales Cisco/AWS/Azure/GCP)."
+        )
+        p.runs[0].font.color.rgb = RGBColor(*MUTED)
 
     # 3. Blueprint por arquitectura
     h("3. Blueprint por arquitectura", 1)

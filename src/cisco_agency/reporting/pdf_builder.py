@@ -122,6 +122,23 @@ def build_proposal(
     out.mkdir(parents=True, exist_ok=True)
     slug = (basename or opportunity.customer).lower().replace(" ", "_")
 
+    # Diagrama de arquitectura de red (PNG incrustado + .drawio editable).
+    diagram_data_uri = ""
+    diagram_png = None
+    diagram_drawio = None
+    try:
+        import base64
+
+        from .diagram import build_topology, render_png, write_drawio
+
+        tiers = build_topology(opportunity, findings)
+        diagram_png = render_png(tiers, out_dir, slug, opportunity.customer)
+        diagram_drawio = write_drawio(tiers, out_dir, slug, opportunity.customer)
+        b64 = base64.b64encode(Path(diagram_png).read_bytes()).decode()
+        diagram_data_uri = "data:image/png;base64," + b64
+    except Exception:  # pragma: no cover - diagrama es best-effort
+        pass
+
     env = Environment(
         loader=FileSystemLoader(str(TEMPLATES_DIR)),
         autoescape=select_autoescape(["html", "xml"]),
@@ -170,12 +187,15 @@ def build_proposal(
         kpis=_build_kpis(bom, findings),
         use_cases=_default_use_cases(findings),
         roadmap=_default_roadmap(),
+        diagram_data_uri=diagram_data_uri,
     )
 
     html_path = out / f"propuesta_{slug}.html"
     html_path.write_text(html, encoding="utf-8")
 
     result = {"html": str(html_path), "pdf": None, "pdf_engine": None, "pdf_error": None}
+    result["diagram_png"] = diagram_png
+    result["diagram_drawio"] = diagram_drawio
 
     # Exportación a PowerPoint / Word (best-effort; requiere el extra office/web).
     result["pptx"] = None
@@ -189,6 +209,7 @@ def build_proposal(
             integration=integration, bom=bom, financial_case=financial_case,
             review=review, verification=verification, fiscal_year=fiscal_year,
             out_dir=out_dir, basename=basename, synthesis=synthesis,
+            diagram_png=diagram_png,
         )
         result["pptx"] = build_pptx(**common)
         result["docx"] = build_docx(**common, critique=critique)
