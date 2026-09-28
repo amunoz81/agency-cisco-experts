@@ -3,7 +3,7 @@ id: cvd-security-cisco-hypershield-seguridad-distribuida-ai-native
 title: Cisco Hypershield (seguridad distribuida AI-native)
 architecture: security
 source: https://www.cisco.com/c/en/us/products/collateral/security/hypershield/hypershield-so.html
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: '2025'
 status: verificada
 tags:

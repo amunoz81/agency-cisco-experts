@@ -3,7 +3,7 @@ id: cvd-secure_networking-cisco-catalyst-sd-wan-design-guide-cvd
 title: Cisco Catalyst SD-WAN Design Guide (CVD)
 architecture: secure_networking
 source: https://www.cisco.com/c/en/us/td/docs/solutions/CVD/SDWAN/cisco-sdwan-design-guide.html
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: '2025'
 status: verificada
 tags:

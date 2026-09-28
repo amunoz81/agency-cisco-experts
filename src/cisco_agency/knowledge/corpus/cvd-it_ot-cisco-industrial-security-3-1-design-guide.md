@@ -3,7 +3,7 @@ id: cvd-it_ot-cisco-industrial-security-3-1-design-guide
 title: Cisco Industrial Security 3.1 Design Guide
 architecture: it_ot
 source: https://www.cisco.com/c/dam/en/us/td/docs/Technology/Industrial-Security-3-1-DG.pdf
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: 3.1 (jun 2025)
 status: verificada
 tags:

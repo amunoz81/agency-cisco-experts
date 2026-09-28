@@ -3,7 +3,7 @@ id: cvd-datacenter_ai-cisco-aci-application-centric-infrastructure-design-guide
 title: Cisco ACI (Application Centric Infrastructure) Design Guide
 architecture: datacenter_ai
 source: https://www.cisco.com/c/en/us/td/docs/dcn/whitepapers/cisco-application-centric-infrastructure-design-guide.html
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: '2025'
 status: verificada
 tags:

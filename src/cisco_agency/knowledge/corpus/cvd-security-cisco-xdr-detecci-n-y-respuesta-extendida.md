@@ -3,7 +3,7 @@ id: cvd-security-cisco-xdr-detecci-n-y-respuesta-extendida
 title: Cisco XDR (detección y respuesta extendida)
 architecture: security
 source: https://www.cisco.com/c/en/us/products/collateral/security/xdr/xdr-aag.html
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: '2025'
 status: verificada
 tags:

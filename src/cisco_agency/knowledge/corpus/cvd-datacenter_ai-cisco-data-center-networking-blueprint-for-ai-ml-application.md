@@ -3,7 +3,7 @@ id: cvd-datacenter_ai-cisco-data-center-networking-blueprint-for-ai-ml-applicati
 title: Cisco Data Center Networking Blueprint for AI/ML Applications
 architecture: datacenter_ai
 source: https://www.cisco.com/c/en/us/td/docs/dcn/whitepapers/cisco-data-center-networking-blueprint-for-ai-ml-applications.html
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: '2025'
 status: verificada
 tags:

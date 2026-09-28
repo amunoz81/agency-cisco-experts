@@ -3,7 +3,7 @@ id: cvd-observability_soc-cisco-thousandeyes-monitoreo-de-experiencia-digital
 title: Cisco ThousandEyes (monitoreo de experiencia digital)
 architecture: observability_soc
 source: https://www.cisco.com/c/dam/m/en_in/pdf/thousandeyes-platform-overview.pdf
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: '2025'
 status: verificada
 tags:
