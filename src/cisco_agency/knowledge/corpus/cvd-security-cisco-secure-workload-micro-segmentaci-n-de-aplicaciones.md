@@ -3,7 +3,7 @@ id: cvd-security-cisco-secure-workload-micro-segmentaci-n-de-aplicaciones
 title: Cisco Secure Workload (micro-segmentación de aplicaciones)
 architecture: security
 source: https://www.cisco.com/c/en/us/products/collateral/security/secure-workload/sec-workload-firewall-wp.html
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: '2025'
 status: verificada
 tags:

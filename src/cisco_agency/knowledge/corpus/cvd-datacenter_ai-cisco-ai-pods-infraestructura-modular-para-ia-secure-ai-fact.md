@@ -3,7 +3,7 @@ id: cvd-datacenter_ai-cisco-ai-pods-infraestructura-modular-para-ia-secure-ai-fa
 title: Cisco AI PODs (infraestructura modular para IA — Secure AI Factory)
 architecture: datacenter_ai
 source: https://www.cisco.com/c/en/us/products/collateral/servers-unified-computing/ucs-c-series-rack-servers/ai-pods-aag.html
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: '2025'
 status: verificada
 tags:

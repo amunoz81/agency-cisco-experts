@@ -3,7 +3,7 @@ id: cvd-security-cisco-safe-reference-architecture-secure-firewall-pins
 title: Cisco SAFE Reference Architecture (Secure Firewall / PINs)
 architecture: security
 source: https://www.cisco.com/c/en/us/solutions/collateral/enterprise/design-zone-security/safe-overview-guide.html
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: '2025'
 status: verificada
 tags:

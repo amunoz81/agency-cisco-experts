@@ -3,7 +3,7 @@ id: cvd-observability_soc-cisco-data-center-networking-blueprint-telemetr-a-nexu
 title: Cisco Data Center Networking Blueprint (telemetría / Nexus Dashboard)
 architecture: observability_soc
 source: https://www.cisco.com/c/en/us/td/docs/dcn/whitepapers/cisco-data-center-networking-blueprint-for-ai-ml-applications.html
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: '2025'
 status: verificada
 tags:

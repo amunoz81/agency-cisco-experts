@@ -3,7 +3,7 @@ id: cvd-security-cisco-zero-trust-access-at-a-glance
 title: Cisco Zero Trust Access (At a Glance)
 architecture: security
 source: https://www.cisco.com/c/en/us/products/collateral/security/secure-access/zero-trust-access-aag.html
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: '2025'
 status: verificada
 tags:

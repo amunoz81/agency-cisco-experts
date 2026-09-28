@@ -3,7 +3,7 @@ id: cvd-it_ot-networking-and-security-in-industrial-automation-environment
 title: Networking and Security in Industrial Automation Environments (CVD)
 architecture: it_ot
 source: https://www.cisco.com/c/en/us/td/docs/solutions/Verticals/Industrial_Automation/IA_Horizontal/DG/Industrial-AutomationDG.html
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: DG
 status: verificada
 tags:

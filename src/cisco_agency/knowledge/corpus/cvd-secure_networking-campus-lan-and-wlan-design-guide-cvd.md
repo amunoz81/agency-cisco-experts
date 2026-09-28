@@ -3,7 +3,7 @@ id: cvd-secure_networking-campus-lan-and-wlan-design-guide-cvd
 title: Campus LAN and WLAN Design Guide (CVD)
 architecture: secure_networking
 source: https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/cisco-campus-lan-wlan-design-guide.html
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: '2025'
 status: verificada
 tags:

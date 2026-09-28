@@ -3,7 +3,7 @@ id: cvd-collaboration-cisco-preferred-architecture-for-webex-calling-nube
 title: Cisco Preferred Architecture for Webex Calling (nube)
 architecture: collaboration
 source: https://www.cisco.com/c/dam/en/us/td/docs/solutions/CVD/Collaboration/hybrid/AltDesigns/PA-WbxCall.pdf
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: ago 2025
 status: verificada
 tags:

@@ -3,7 +3,7 @@ id: cvd-secure_networking-cisco-sase-sse-architecture-guide-sucursal-y-trabajo-r
 title: Cisco SASE/SSE Architecture Guide (sucursal y trabajo remoto)
 architecture: secure_networking
 source: https://www.cisco.com/c/en/us/solutions/collateral/enterprise/design-zone-security/sase-sse-ag.html
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: '2025'
 status: verificada
 tags:

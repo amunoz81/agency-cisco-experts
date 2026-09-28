@@ -3,7 +3,7 @@ id: cvd-collaboration-cisco-preferred-architecture-for-on-premises-collaboration
 title: Cisco Preferred Architecture for On-Premises Collaboration
 architecture: collaboration
 source: https://www.cisco.com/c/dam/en/us/td/docs/solutions/PA/overview/15x/clbpa15x.pdf
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: 15.x
 status: verificada
 tags:

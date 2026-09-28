@@ -3,7 +3,7 @@ id: cvd-secure_networking-cisco-secure-network-reference-architecture
 title: Cisco Secure Network Reference Architecture
 architecture: secure_networking
 source: https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/Intro-Cisco-Secure-Network-Architecture.html
-source_date: '2026-09-15'
+source_date: '2026-09-28'
 version: '2025'
 status: verificada
 tags:

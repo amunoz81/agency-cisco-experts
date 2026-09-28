@@ -16,7 +16,7 @@
 # Estado por defecto de las entradas: verificada (fuente oficial de Cisco).
 # ============================================================================
 
-retrieved: "2026-09-15"
+retrieved: "2026-09-28"
 
 secure_networking:
   index_pages:
@@ -73,6 +73,46 @@ secure_networking:
         aplicación/datos. Se despliega como SASE unificado (un proveedor) o SSE
         modular, con transición gradual desde arquitecturas heredadas; Digital
         Experience Monitoring da visibilidad de la experiencia de extremo a extremo.
+    - title: "Cisco SD-Access Solution Design Guide (CVD)"
+      url: https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/cisco-sda-design-guide.html
+      version: "2026"
+      summary: >-
+        Guía de diseño de Software-Defined Access (SD-Access) sobre fabric de
+        campus con Cisco Catalyst Center como controlador de automatización e
+        intención. Tres roles de nodo: edge (equivalente a la capa de acceso,
+        basado en xTR de LISP), control-plane (implementa LISP Map-Server/
+        Map-Resolver y mantiene la base de host-tracking con el binding
+        EID-a-RLOC de cada endpoint) y border (punto de entrada/salida hacia
+        redes externas al fabric). El overlay extiende conectividad de Capa 2
+        y Capa 3 mediante LISP (plano de control) y VXLAN (plano de datos),
+        desacoplando la identidad del endpoint de su ubicación topológica.
+        Recomienda nodos de control-plane redundantes del mismo tipo de
+        plataforma para desempeño consistente, ya que border y edge nodes se
+        registran contra todos los nodos de control-plane disponibles.
+        Habilita macro-segmentación por Virtual Network (VN) y
+        micro-segmentación por Scalable Group Tag (SGT/TrustSec) aplicada de
+        forma consistente en wired y wireless, como alternativa basada en
+        intención al diseño LAN/WLAN tradicional de Catalyst 9000.
+    - title: "Cisco Secure Firewall Threat Defense SD-WAN Design and Deployment Guide"
+      url: https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/cvd/secure-firewall-sdwan-deployment-guide.html
+      version: "2026"
+      summary: >-
+        Guía de diseño para desplegar Cisco Secure Firewall Threat Defense
+        (FTD), gestionado por Secure Firewall Management Center, como firewall
+        de rama integrado en una arquitectura SD-WAN altamente disponible. Usa
+        Virtual Tunnel Interfaces (VTI), interfaces lógicas enrutables sobre
+        las que se aplican políticas de enrutamiento estático o dinámico (BGP)
+        para anunciar alcanzabilidad hacia los hubs. Para Secure Internet
+        Access (SIA) en rama, la alta disponibilidad se logra con IKE Dead
+        Peer Detection (DPD) en enrutamiento estático (el túnel conmuta
+        automáticamente al hub secundario si el par primario deja de
+        responder) o con failover de sesiones BGP en enrutamiento dinámico (el
+        FTD pivota al siguiente par BGP si cae el path primario), asegurando
+        acceso a Internet continuo ante fallas de componente o de datacenter.
+        Integra IPS, filtrado de URL y demás inspecciones de Threat Defense
+        como base de seguridad en el borde de la rama, combinando firewall de
+        próxima generación y conectividad SD-WAN en un dispositivo gestionado
+        centralmente.
 
 security:
   index_pages:
@@ -139,6 +179,62 @@ security:
         ATT&CK (TTPs) y criticidad del activo. XDR Forensics recolecta artefactos
         y habilita respuesta remota; integra soluciones Cisco y de terceros.
         Complementa a Splunk y Secure Network Analytics en el SOC.
+    - title: "Cisco Zero Trust Architecture Guide"
+      url: https://www.cisco.com/c/en/us/solutions/collateral/enterprise/design-zone-security/zt-ag.html
+      version: "2026"
+      summary: >-
+        Guía marco que organiza la arquitectura Zero Trust de Cisco en tres
+        pilares complementarios. User and Device Security verifica
+        continuamente la identidad (MFA, SSO y autenticación basada en riesgo
+        con Duo) y evalúa la postura de dispositivos gestionados y no
+        gestionados antes de conceder acceso. Network and Cloud Security
+        protege los recursos de red on-prem y en nube y garantiza acceso
+        seguro para todos los usuarios que se conectan, apoyándose en ISE para
+        autenticación 802.1X de dispositivos (con perfiles de Cisco Secure
+        Client) y en Secure Access/SSE para el acceso remoto. Application and
+        Data Security aplica políticas de acceso granulares a nivel de
+        aplicación (on-prem o en nube) con Duo, protegiendo indirectamente los
+        datos al limitar el acceso a usuarios autorizados sobre dispositivos
+        conformes. Sirve como mapa de referencia hacia las guías de diseño
+        específicas de cada pilar y hacia el mapeo con marcos regulatorios
+        como el modelo de madurez Zero Trust de CISA.
+    - title: "Cisco Zero Trust: User and Device Security Design Guide"
+      url: https://www.cisco.com/c/en/us/solutions/collateral/enterprise/design-zone-security/zt-user-device-dg.html
+      version: "2026"
+      summary: >-
+        Guía de diseño del pilar de usuario y dispositivo del marco Zero Trust
+        de Cisco. Detalla el despliegue de Cisco Duo para autenticación
+        multifactor (MFA), single sign-on (SSO) y autenticación adaptativa
+        basada en riesgo, de forma que cada usuario se verifique de manera
+        continua en cada acceso, no solo al inicio de sesión. Cubre la
+        evaluación de postura de dispositivos administrados y no
+        administrados (parches, cifrado de disco, versión de SO y controles
+        de seguridad) antes de autorizar el acceso a aplicaciones. Describe la
+        integración con Cisco Secure Client (AnyConnect) y la configuración de
+        sus perfiles para habilitar autenticación 802.1X contra Cisco ISE,
+        unificando el control de acceso a la red con la verificación continua
+        del usuario. Es la base práctica de implementación de la primera capa
+        del modelo Zero Trust: garantizar que solo usuarios verificados en
+        dispositivos conformes obtengan acceso, con controles reevaluados de
+        forma continua conforme cambia el riesgo.
+    - title: "Cisco Zero Trust: Network and Cloud Security Design Guide"
+      url: https://www.cisco.com/c/en/us/solutions/collateral/enterprise/design-zone-security/zt-network-cloud-dg.html
+      version: "2026"
+      summary: >-
+        Guía de diseño del pilar de red y nube del marco Zero Trust de Cisco,
+        enfocada en proteger los recursos on-prem y en la nube y en garantizar
+        acceso seguro y consistente para todos los usuarios que se conectan.
+        Describe el uso de Cisco ISE para autenticación 802.1X de dispositivos
+        que se conectan a la red cableada e inalámbrica, en conjunto con
+        perfiles de Cisco Secure Client (AnyConnect), como base del control de
+        acceso a la red. Aborda la aplicación de políticas de segmentación
+        (TrustSec/SGT) para limitar el movimiento lateral una vez autenticado
+        el dispositivo, y el rol de Secure Access/SSE (SASE) para extender la
+        verificación continua a usuarios remotos y aplicaciones SaaS, evitando
+        el acceso implícito basado únicamente en la ubicación de red.
+        Complementa el pilar de usuario y dispositivo al mover la confianza
+        desde el perímetro de red hacia la verificación continua de cada
+        sesión y flujo, tanto en el datacenter propio como en cargas en nube.
 
 it_ot:
   index_pages:
@@ -201,6 +297,26 @@ observability_soc:
         switches Catalyst 9000, para instrumentar el campus con vantage points
         internos sin hardware adicional. Complementa la observabilidad de red con
         pruebas activas desde el propio acceso.
+    - title: "Deploying Cisco ACI Fabrics with Telemetry on Nexus Dashboard"
+      url: https://www.cisco.com/c/en/us/td/docs/dcn/whitepapers/getting-aci-ready-for-nd.html
+      version: "2026"
+      summary: >-
+        White paper de diseño para instrumentar fabrics Cisco ACI con
+        telemetría hacia Nexus Dashboard (base de Nexus Dashboard Insights).
+        Desde ACI 6.1(2), la fuente de telemetría en APIC y switches puede
+        configurarse por out-of-band (mgmt0) o in-band (SVI); en ambos casos
+        la telemetría siempre se envía a las interfaces de datos de los nodos
+        de Nexus Dashboard, nunca a sus puertos de gestión. Out-of-band es
+        plug-and-play: reutiliza la red de gestión fuera de banda que ya
+        existe para administración remota y recuperación ante desastres, sin
+        configuración adicional. In-band, históricamente el único método
+        disponible, requiere configurar bridge domains, EPGs, contracts y
+        direcciones de gestión de nodo dentro del tenant mgmt, pero es la
+        única opción que soporta Flow Telemetry y mayor ancho de banda de
+        streaming. Recomienda revisar siempre la guía de despliegue de Nexus
+        Dashboard específica de la versión antes de habilitar la telemetría;
+        referencia clave para dimensionar la observabilidad de fabric que
+        alimenta a Nexus Dashboard Insights.
 
 datacenter_ai:
   index_pages:
@@ -248,6 +364,45 @@ datacenter_ai:
         Intersight. Diseño modular por unidades de escala de 32 a 128+ GPUs;
         soporta entrenamiento, fine-tuning e inferencia. Reduce el tiempo de
         puesta en marcha hasta ~50% frente a un armado a la medida (DIY).
+    - title: "Building AI/ML Data Center Fabric using VXLAN EVPN for GPUaaS"
+      url: https://www.cisco.com/c/en/us/td/docs/dcn/whitepapers/building-aiml-dc-fabric-using-vxlan-evpn-for-gpuaas.html
+      version: "2026"
+      summary: >-
+        Guía de diseño para construir un fabric spine-leaf VXLAN BGP EVPN
+        dedicado a ofrecer GPU-as-a-Service (GPUaaS) multi-tenant. Se basa en
+        servidores densos de GPU Cisco UCS C885A M8 conectados a switches
+        Nexus 9000 (incluye el Nexus 9364D-GX2A, 2RU con 64 puertos QSFP-DD de
+        400G y hasta 25.6 Tbps de capacidad de conmutación a line-rate)
+        organizados en topología leaf-spine. El overlay VXLAN EVPN provee
+        dominios Capa 2 aislados y seguros por cliente/tenant, de modo que
+        cada consumidor de GPUaaS opera sin tráfico cruzado entre tenants
+        sobre una infraestructura física compartida. Nexus Dashboard aporta
+        automatización basada en intención, gestión centralizada y visibilidad
+        extremo a extremo del fabric, con una guía paso a paso para
+        configurar el fabric spine-leaf optimizado para AI/ML. Incluye
+        ejemplos de configuración, casos de uso y procedimientos de despliegue
+        completos: referencia de diseño multi-tenant complementaria al fabric
+        de IA no bloqueante ya cubierto para clústeres GPU de un solo tenant.
+    - title: "Cisco Nexus Hyperfabric Enterprise Reference Architecture"
+      url: https://www.cisco.com/c/en/us/products/collateral/data-center-networking/nexus-hyperfabric/hyperfabric-ai-era-ds.html
+      version: "2026"
+      summary: >-
+        Arquitectura de referencia full-stack para infraestructura de IA
+        on-premises, gestionada por un controlador Cisco Nexus Hyperfabric
+        alojado en la nube y alineada con la NVIDIA Enterprise Reference
+        Architecture para NVIDIA HGX H200 y la red NVIDIA Spectrum-X. Cómputo
+        con el servidor Cisco UCS C885A M8 (8RU, alta densidad de GPU) para
+        entrenamiento, fine-tuning, inferencia de modelos grandes y RAG. Red
+        con el switch Cisco N9164E-NS4-O, basado en NPU NVIDIA Spectrum-4
+        (2RU, hasta 64 puertos 800G OSFP o 128 puertos 400GE), utilizable en
+        rol leaf o spine de la red este-oeste de cómputo. La tecnología NVIDIA
+        Spectrum-X mejora el rendimiento y eficiencia de redes Ethernet para
+        GPU y storage; sus beneficios se obtienen con switches Hyperfabric
+        basados en Cisco Silicon One conectados a SuperNICs NVIDIA
+        BlueField-3 con la licencia Fine Grain Load Balancing (FGLB)
+        habilitada. El controlador cloud gestiona diseño, pedido, despliegue,
+        operación y escalado del fabric, GPUs, storage y red como una sola
+        unidad de infraestructura de IA.
 
 collaboration:
   index_pages:
@@ -276,3 +431,24 @@ collaboration:
         Variante Dedicated Instance para clientes que requieren instancia
         gestionada. Base para dimensionar por usuario/estación, sesiones PSTN
         concurrentes y modalidad cloud vs híbrida.
+    - title: "Cisco Preferred Architecture for Webex Edge Connect"
+      url: https://www.cisco.com/c/dam/en/us/td/docs/solutions/PA/EdgeConnect/PA_Edge_Connect_Design.pdf
+      version: "jul 2026"
+      summary: >-
+        Arquitectura preferida para Webex Edge Connect, una conexión de
+        peering de red privada y dedicada que conecta las instalaciones del
+        cliente directamente con el backbone de Webex a través de un proveedor
+        de cloud exchange (Equinix Fabric o Megaport), evitando el tránsito
+        por Internet público. Requiere una conexión activa en el Equinix
+        Cloud Exchange (o equivalente en Megaport) y un número de sistema
+        autónomo (ASN) BGP público o privado para establecer el peering entre
+        el router de borde del cliente y el backbone de Webex. El enlace es
+        administrado, con calidad de servicio (QoS) habilitada y ancho de
+        banda dedicado hacia el datacenter de Webex Meetings correspondiente,
+        lo que aísla las reuniones y llamadas de la volatilidad y las
+        amenazas asociadas al Internet público. Mejora la calidad y
+        consistencia del rendimiento de reuniones y llamadas Webex, y aumenta
+        la seguridad frente a conectividad basada en VPN o Internet directo.
+        Complementa las arquitecturas de Webex Calling y Private Network
+        Connect (PNC) ya cubiertas para clientes que requieren conectividad
+        privada de máxima calidad hacia la nube de colaboración.
