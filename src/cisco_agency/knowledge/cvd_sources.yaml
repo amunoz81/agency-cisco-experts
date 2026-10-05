@@ -73,6 +73,26 @@ secure_networking:
         aplicación/datos. Se despliega como SASE unificado (un proveedor) o SSE
         modular, con transición gradual desde arquitecturas heredadas; Digital
         Experience Monitoring da visibilidad de la experiencia de extremo a extremo.
+    - title: "Cisco Unified Branch Design Guide (CVD)"
+      url: https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/cisco_unified_branch_design_guide.html
+      version: "2025"
+      summary: >-
+        Arquitectura Unified Branch de Cisco, desarrollada y liberada por
+        fases: diseño de sucursal pequeña, mediana y grande, gestionados
+        desde el Meraki Dashboard. Combina múltiples modelos de MX, routers
+        seguros Cisco, switches y APs Cisco, con Auto VPN como tecnología
+        propietaria que construye automáticamente túneles cifrados entre
+        los routers WAN de las sucursales mediante un registro VPN en la
+        nube (servicio que rastrea la información de contacto de los
+        equipos participantes). Servicios cubiertos: modo enrutado, dual
+        WAN, interfaces VLAN, DHCP local y centralizado, Auto VPN
+        hub-and-spoke, firewall de sitio a sitio y de router local, acceso
+        seguro a Internet, túneles multi-uplink, ruptura de Internet
+        local, políticas SD-WAN por desempeño y por dirección de tráfico,
+        traffic shaping, protección contra amenazas, filtrado de
+        contenido, spanning-tree y QoS. La documentación consta de una
+        guía de diseño y de guías de despliegue paso a paso por tamaño de
+        sucursal, para simplificar sucursales con gestión 100% en la nube.
 
 security:
   index_pages:
@@ -139,6 +159,45 @@ security:
         ATT&CK (TTPs) y criticidad del activo. XDR Forensics recolecta artefactos
         y habilita respuesta remota; integra soluciones Cisco y de terceros.
         Complementa a Splunk y Secure Network Analytics en el SOC.
+    - title: "Cisco Zero Trust Architecture Guide"
+      url: https://www.cisco.com/c/en/us/solutions/collateral/enterprise/design-zone-security/zt-ag.html
+      version: "2025"
+      summary: >-
+        Guía de arquitectura que organiza el framework Zero Trust de Cisco
+        en tres pilares: Seguridad de Usuario y Dispositivo (verifica que
+        usuarios y dispositivos sean confiables sin importar la
+        ubicación), Seguridad de Red y Nube (protege recursos on-prem y
+        en la nube, y asegura el acceso de los usuarios que se conectan)
+        y Seguridad de Aplicación y Datos (previene el acceso no
+        autorizado dentro de los entornos de aplicación). Se apoya en
+        tres pilares fundacionales transversales: Plataforma Zero Trust,
+        Automatización y Orquestación de Seguridad, y Visibilidad y
+        Analítica de Seguridad. Usa la metodología SAFE para mapear las
+        capacidades de seguridad a los componentes arquitectónicos y
+        estos, a su vez, al portafolio de productos Cisco (ISE, Duo,
+        Secure Firewall, Secure Access, Secure Network Analytics, entre
+        otros). Sirve como mapa de referencia para posicionar de forma
+        consistente los productos de seguridad de Cisco dentro de una
+        estrategia Zero Trust integral.
+    - title: "Zero Trust: Network and Cloud Security Design Guide"
+      url: https://www.cisco.com/c/en/us/solutions/collateral/enterprise/design-zone-security/zt-network-cloud-dg.html
+      version: "2025"
+      summary: >-
+        Guía de diseño del pilar de Seguridad de Red y Nube de la Cisco
+        Zero Trust Architecture. Integra Catalyst 9300 como switch de
+        acceso y punto de aplicación TrustSec/802.1X (autenticación,
+        control de acceso, monitoreo y enforcement), Cisco ISE para
+        autenticación, autorización y asignación dinámica de Security
+        Group Tags, Cisco Secure Firewall para control de acceso basado
+        en roles junto con TrustSec, Secure Network Analytics para
+        visibilidad y detección de amenazas mediante análisis de
+        telemetría, y Cisco Telemetry Broker, que recibe NetFlow del
+        switch Catalyst y del Secure Firewall y lo distribuye al Flow
+        Collector de Secure Network Analytics. El diseño combina
+        segmentación por grupos (TrustSec/SGT), autenticación de
+        dispositivos/usuarios y monitoreo continuo del tráfico para
+        aplicar políticas de confianza cero desde el acceso de campus
+        hasta la nube, con visibilidad este-oeste granular.
 
 it_ot:
   index_pages:
@@ -201,6 +260,26 @@ observability_soc:
         switches Catalyst 9000, para instrumentar el campus con vantage points
         internos sin hardware adicional. Complementa la observabilidad de red con
         pruebas activas desde el propio acceso.
+    - title: "Cisco Event Agentic SOCs: Reference Architecture and Operations Guide"
+      url: https://www.cisco.com/c/dam/en/us/products/collateral/security/cisco-event-socs.pdf
+      version: "2026"
+      summary: >-
+        Framework de referencia repetible de Cisco para construir y
+        operar SOCs agénticos ("Agentic SOC") en eventos grandes y de
+        corta duración (p. ej. RSAC, Cisco Live, Black Hat), basado en
+        despliegues reales en dichos eventos. Arquitectura "SOC in a
+        Box": Splunk Enterprise Security como plano único de análisis y
+        registro canónico de incidentes, integrado con Cisco XDR
+        (recolección/procesamiento de telemetría, SOAR con playbooks y
+        conector de sistemas), Cisco Secure Firewall (enforcement
+        inline), Cisco Secure Access (seguridad DNS), Endace (captura
+        continua de paquetes para investigación forense), Secure Network
+        Analytics, ThousandEyes, Splunk Attack Analyzer, Secure Malware
+        Analytics y Talos. XDR detecta cambios de escalamiento y los
+        transforma en investigaciones estructuradas de Splunk ES,
+        generando hallazgos y entidades de riesgo. Modelo operativo
+        human-in-the-loop: los agentes de IA resumen y recomiendan, pero
+        los analistas validan y deciden la respuesta final.
 
 datacenter_ai:
   index_pages:
@@ -248,6 +327,42 @@ datacenter_ai:
         Intersight. Diseño modular por unidades de escala de 32 a 128+ GPUs;
         soporta entrenamiento, fine-tuning e inferencia. Reduce el tiempo de
         puesta en marcha hasta ~50% frente a un armado a la medida (DIY).
+    - title: "Building AI/ML Data Center Fabric using VXLAN EVPN for GPUaaS"
+      url: https://www.cisco.com/c/en/us/td/docs/dcn/whitepapers/building-aiml-dc-fabric-using-vxlan-evpn-for-gpuaas.html
+      version: "2025"
+      summary: >-
+        Blueprint de Cisco para construir fabrics de datacenter para
+        cargas de IA/ML mediante overlay VXLAN EVPN, basado en un
+        despliegue real con servidores Cisco UCS C885A M8 densos en GPU y
+        GPUs NVIDIA. La arquitectura de referencia usa switches Nexus
+        9364D-GX2A (64 puertos de 400GbE QSFP-DD, hasta 25.6 Tbps, ASIC
+        SoC con 4 pares de slices) tanto en spine como en leaf -ejemplo
+        con 16 spines y 24 leaves corriendo NX-OS 10.5(3)F-, con 16
+        puertos por par de slice alineados al cableado rail-optimized de
+        clústeres de GPU para flujos de baja latencia y predecibles.
+        Gestión y automatización con Cisco Nexus Dashboard 4.1, que
+        reduce el tiempo de aprovisionamiento de días a horas. VXLAN EVPN
+        aporta multi-tenencia segura, permitiendo segmentar de forma
+        aislada entornos de investigación, producción y desarrollo de IA
+        sobre la misma infraestructura física, con ancho de banda
+        predecible y line-rate en todos los puertos.
+    - title: "Cisco AI POD for Enterprise Training and Fine-Tuning Design Guide"
+      url: https://www.cisco.com/c/en/us/td/docs/unified_computing/ucs/UCS_CVDs/cisco_ai_pod_for_training_design.html
+      version: "2025"
+      summary: >-
+        Guía de diseño del AI POD de Cisco para entrenamiento y
+        fine-tuning empresarial de modelos de IA. Cómputo con servidores
+        Cisco UCS C-Series: el C885A M8 es un sistema fijo de 8 GPUs
+        (NVIDIA HGX H200 o AMD MI300X/MI350X OAM) optimizado para máxima
+        densidad y desempeño; el C845A M8 soporta de 2 a 8 GPUs PCIe del
+        mismo tipo (L40S, RTX PRO 6000, H100 NVL o H200 NVL). Red con
+        switches Nexus 9000 formando dos fabrics de alto ancho de banda y
+        baja latencia, gestionados por Cisco Nexus Dashboard para
+        garantizar comunicación lossless. Diseño modular por unidades de
+        escala, con clústeres de 32, 64 o 128 GPUs según la necesidad
+        empresarial. Combina cómputo denso en GPU, red no bloqueante y
+        gestión unificada para acelerar el despliegue de infraestructura
+        de entrenamiento e inferencia de IA frente a un armado DIY.
 
 collaboration:
   index_pages:
@@ -276,3 +391,23 @@ collaboration:
         Variante Dedicated Instance para clientes que requieren instancia
         gestionada. Base para dimensionar por usuario/estación, sesiones PSTN
         concurrentes y modalidad cloud vs híbrida.
+    - title: "Cisco Preferred Architecture for Webex Calling Dedicated Instance"
+      url: https://www.cisco.com/c/dam/en/us/td/docs/solutions/CVD/Collaboration/hybrid/AltDesigns/PA-WbxCallDI.pdf
+      version: "sep 2025"
+      summary: >-
+        Arquitectura preferida para Webex Calling Dedicated Instance
+        (DI): entorno UC dedicado en la nube que combina las
+        funcionalidades tradicionales de Unified CM con los beneficios de
+        la plataforma Webex. Dimensionamiento: un clúster DI completamente
+        desplegado soporta hasta 8 servidores de procesamiento de
+        llamadas y aproximadamente 50,000 dispositivos (versión 14 y
+        posteriores). Opciones de conectividad PSTN: Cloud Connected PSTN
+        (CCP, aprovechando el peering existente de partners CCP con Webex
+        Calling), Local Gateway (que termina un troncal TDM/IP en el
+        mismo router o se conecta vía SIP trunk a un gateway PSTN
+        existente, usando un Cisco Unified Border Element -CUBE- o voice
+        gateway), y Local Gateway hosteado por un partner en su propio
+        datacenter. Prácticas recomendadas: troncales SIP seguros entre
+        Unified CM y el gateway o CUBE para llamadas salientes a PSTN,
+        con TLS para cifrado de señalización y SRTP para cifrado de
+        medios.
