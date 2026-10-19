@@ -173,6 +173,27 @@ security:
         número de nodos ISE, su distribución geográfica y la capacidad de
         autenticación 802.1X/MAB requerida por el proyecto (campus, sucursal o
         acceso OT vía TrustSec).
+    - title: "Cisco Secure Firewall Threat Defense SD-WAN Design and Deployment Guide"
+      url: https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/cvd/secure-firewall-sdwan-deployment-guide.html
+      version: "7.6"
+      summary: >-
+        Guía de diseño y despliegue de SD-WAN con Cisco Secure Firewall Threat
+        Defense y Firewall Management Center (release 7.6), complementaria al
+        SASE/SSE del catálogo. Arquitectura hub-and-spoke con túneles VTI
+        enrutados: el hub usa una Dynamic VTI (DVTI) que crea una interfaz
+        virtual-access por spoke desde una plantilla, mientras cada spoke usa
+        una Static VTI (SVTI) unidireccional para iniciar el túnel. BGP, OSPF
+        o EIGRP corren sobre el overlay; el asistente de Management Center
+        automatiza DVTIs/SVTIs y el BGP del overlay. Los hubs retransmiten
+        tráfico spoke-to-spoke (los spokes no se comunican directo entre
+        sí). Soporta hasta dos hubs por topología y hasta 1024 interfaces de
+        túnel virtual; dual hub/dual ISP produce 16 túneles. Policy-Based
+        Routing con monitoreo de ruta (sondas ICMP, probe HTTP de 10s)
+        habilita Direct Internet Access; ECMP agrega ancho de banda entre
+        ISPs/VTIs. Redundancia hacia Cisco Secure Access vía hub primario/
+        secundario y túneles activo-activo/activo-backup (hasta 16 túneles,
+        1 Gbps cada uno). Cisco recomienda un solo hub en topologías
+        route-based simples.
 
 it_ot:
   index_pages:
@@ -199,24 +220,6 @@ it_ot:
         Cyber Vision (embebidos en switches Catalyst IE y dedicados), control de
         acceso con ISE/TrustSec y firewall industrial, y estrategia de adopción
         sin afectar producción.
-    - title: "Secure Substation Design Guide (Design Zone for Manufacturing)"
-      url: https://www.cisco.com/c/en/us/solutions/design-zone/industrial-iot-cisco-validated/utilities-and-renewables/secure-substation-design-guide.html
-      version: "2026"
-      summary: >-
-        Diseño validado de Cisco para subestaciones eléctricas seguras,
-        segmentadas y observables. Dedica un capítulo a la arquitectura de
-        Cisco Cyber Vision para seguridad de subestación: ubicación del Cyber
-        Vision Center y despliegue de sensores sobre switches de acceso
-        industrial Catalyst IE9300 e IE3505. Cubre visibilidad este-oeste
-        dentro del Electronic Security Perimeter (ESP, zona de confianza de la
-        subestación) y visibilidad norte-sur del tráfico SCADA hacia el centro
-        de control. Se apoya en un modelo centralizado de Cyber Vision Center
-        con sensores distribuidos en switches de subestación como puntos de
-        observación naturales, en línea con el enfoque de Cyber Vision para
-        entornos de utilities (agregación central con sensores en cada nivel
-        de la jerarquía de subestaciones/sitios remotos). Referencia para
-        proyectos de seguridad OT en generación, transmisión y distribución
-        eléctrica alineados a IEC 62443.
 
 observability_soc:
   index_pages:
@@ -253,6 +256,48 @@ observability_soc:
         switches Catalyst 9000, para instrumentar el campus con vantage points
         internos sin hardware adicional. Complementa la observabilidad de red con
         pruebas activas desde el propio acceso.
+    - title: "Secure Network Analytics Data Store Design Guide"
+      url: https://www.cisco.com/c/dam/en/us/products/collateral/security/stealthwatch/stealthwatch-data-store-guide.pdf
+      version: "2025"
+      summary: >-
+        Guía de diseño del Data Store de Cisco Secure Network Analytics
+        (ex-Stealthwatch), la capa de almacenamiento distribuido entre el
+        Manager y los Flow Collectors para analítica de NetFlow/telemetría a
+        gran escala en el SOC. Los Flow Collectors envían telemetría a los
+        Data Nodes para almacenamiento centralizado. Soporta diseños de un
+        nodo o multi-nodo; un despliegue de un solo nodo no ofrece
+        resiliencia de datos, y clústeres de dos nodos no son soportados
+        (mínimo tres para redundancia real). Los Data Nodes de un mismo
+        clúster deben ser homogéneos: todos hardware o todos Virtual
+        Edition, sin mezclar. Modos de despliegue: Data Store, no-Data Store
+        e híbrido (algunos Flow Collectors envían al Data Store y otros
+        almacenan localmente). Recomienda un par redundante de switches
+        interconectados que extiendan la misma VLAN L2 a ambos nodos de red;
+        el Data Store no debe estirarse entre dos datacenters por la
+        latencia entre Data Nodes. La función de Analytics (detección de
+        anomalías) requiere una implementación Data Store (virtual o
+        hardware) con cualquier número de Flow Collectors.
+    - title: "Cisco Nexus Dashboard Insights for the Data Center (Data Sheet)"
+      url: https://www.cisco.com/c/en/us/products/collateral/data-center-analytics/nexus-insights/datasheet-c78-742685.html
+      version: "2026"
+      summary: >-
+        Hoja de datos de Cisco Nexus Dashboard Insights, el motor de
+        telemetría y analítica para fabrics Nexus/ACI que complementa el
+        Nexus Dashboard Fabric Controller del catálogo. Flow analytics y
+        eventos de flow-telemetry habilitan análisis automatizado de causa
+        raíz de problemas de plano de datos; disponible solo en switches
+        Nexus 9300/9500/9700 (no en 7000/3000). El monitoreo de utilización
+        de TCAM es una capacidad exclusiva de ACI, combinada con seguimiento
+        de recursos a nivel de fabric que alerta sobre componentes cerca de
+        su capacidad. La vista de topología (vía LLDP/CDP) está disponible
+        en 9000, 7000 y 3000; los nodos sin datos LLDP no aparecen en el
+        mapa. Dashboards personalizables para monitorear los parámetros que
+        el operador elija, soportados en las tres familias de switches. El
+        flow-path visualization está soportado actualmente en plataformas
+        Nexus 9000 cloud-scale. Pensado para correlacionar con Splunk
+        (SIEM/SOAR) y ThousandEyes (experiencia digital) en el flujo de
+        observabilidad hacia el SOC, antes de escalar hallazgos a nivel de
+        aplicación o usuario.
 
 datacenter_ai:
   index_pages:
@@ -316,6 +361,26 @@ datacenter_ai:
         super-spine para interconectar spines entre localidades o pods. Sirve
         como referencia de dimensionamiento para fabrics de datacenter e IA de
         muy alta escala, más allá de un solo par spine-leaf.
+    - title: "Cisco AI POD with FlashStack for Secure Enterprise AI Factories Design Guide"
+      url: https://www.cisco.com/c/en/us/td/docs/unified_computing/ucs/UCS_CVDs/flashstack_aipod_secure_enterprise_ai_factories_design_guide.html
+      version: "2026"
+      summary: >-
+        Guía de diseño de Cisco AI PODs con FlashStack para AI Factories
+        empresariales seguras, que detalla el nodo PCIe UCS X580p dentro del
+        chassis modular X-Series. Cada X580p alberga hasta cuatro GPUs
+        NVIDIA y se empareja con un nodo de cómputo X-Series para CPU/
+        memoria host; un chasis admite hasta dos nodos X580p (ocho GPUs en
+        total), y los dos nodos del mismo chasis pueden usar modelos de GPU
+        distintos, aunque dentro de un mismo nodo todas las GPUs deben ser
+        del mismo modelo. El BOM valida RTX PRO 6000 Blackwell Server
+        Edition y H200 NVL. Red backend con adaptadores NVIDIA ConnectX-7 en
+        módulos X-Fabric X9516, con diseño de un enlace backend de 400 GbE
+        por cada grupo de dos GPUs. Memoria de sistema recomendada: al menos
+        3 veces la memoria combinada de las GPUs asignadas al nodo.
+        Escalabilidad: los Fabric Interconnects soportan hasta 20 chasis UCS
+        X9508, para un máximo de plataforma de 160 GPUs. Se integra con
+        almacenamiento FlashStack (Pure Storage) para datasets de
+        entrenamiento/inferencia.
 
 collaboration:
   index_pages:
@@ -344,6 +409,27 @@ collaboration:
         Variante Dedicated Instance para clientes que requieren instancia
         gestionada. Base para dimensionar por usuario/estación, sesiones PSTN
         concurrentes y modalidad cloud vs híbrida.
+    - title: "Cisco Preferred Architecture for Webex Calling Dedicated Instance"
+      url: https://www.cisco.com/c/dam/en/us/td/docs/solutions/CVD/Collaboration/hybrid/AltDesigns/PA-WbxCallDI.pdf
+      version: "sep 2025"
+      summary: >-
+        Arquitectura preferida de Cisco para Webex Calling Dedicated
+        Instance (DI), la variante de Unified CM gestionada en nube dedicada
+        por cliente, complementaria al Webex Calling multi-tenant del
+        catálogo. Un clúster consiste en un nodo publisher y múltiples
+        subscribers; un clúster DI completamente desplegado soporta hasta 8
+        servidores de call processing o ~50,000 dispositivos (versión 14+).
+        El número de Knowledge Workers y dispositivos de Common Area
+        capturado durante la activación del servicio determina si se
+        requieren múltiples clústeres DI en una misma región. Mixed mode
+        viene habilitado por defecto (el comportamiento depende del
+        endpoint). SIP OAuth (introducido en Unified CM 12.5(1)+) puede
+        operar con o sin mixed mode; mixed mode sigue siendo necesario para
+        cifrado entre clientes Webex y otros dispositivos Unified CM que no
+        soportan SIP OAuth. Hybrid Calling for Devices (device connector) no
+        es soportado dentro de DI. Base para dimensionar clústeres DI por
+        usuario/dispositivo y decidir la topología multi-clúster por
+        región.
     - title: "Cisco Preferred Architecture for Webex Edge Connect"
       url: https://www.cisco.com/c/dam/en/us/td/docs/solutions/PA/EdgeConnect/PA_Edge_Connect_Design.pdf
       version: "2026"
