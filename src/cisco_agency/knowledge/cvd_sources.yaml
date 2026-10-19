@@ -73,6 +73,23 @@ secure_networking:
         aplicación/datos. Se despliega como SASE unificado (un proveedor) o SSE
         modular, con transición gradual desde arquitecturas heredadas; Digital
         Experience Monitoring da visibilidad de la experiencia de extremo a extremo.
+    - title: "Cisco SD-Access Solution Design Guide (CVD)"
+      url: https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/cisco-sda-design-guide.html
+      version: "2026"
+      summary: >-
+        Guía de diseño de la fabric SD-Access, gestionada por Cisco Catalyst
+        Center. Define cuatro roles de nodo: control plane (base de mapeo
+        endpoint-ubicación vía LISP, se recomiendan dos por redundancia), border
+        (punto de entrada/salida del fabric; externo como gateway de último
+        recurso con funcionalidad PxTR, o interno para redes conocidas como el
+        datacenter), edge (donde se conectan endpoints y APs, colocados en la
+        overlay INFRA_VN vía CDP) y nodos intermedios (core/distribución del
+        underlay, tabla de ruteo global). El underlay es Layer 3 solo IPv4; la
+        overlay encapsula tráfico de endpoints en VXLAN y puede ser IPv4 o dual
+        stack. Modelos de sitio: Fabric in a Box (un stack/StackWise Virtual con
+        los tres roles combinados, pensado para menos de 1000 endpoints) o
+        sitios con control plane y border dedicados en pares redundantes; el
+        handoff Layer 2 requiere un border dedicado, sin combinar roles.
 
 security:
   index_pages:
@@ -139,6 +156,23 @@ security:
         ATT&CK (TTPs) y criticidad del activo. XDR Forensics recolecta artefactos
         y habilita respuesta remota; integra soluciones Cisco y de terceros.
         Complementa a Splunk y Secure Network Analytics en el SOC.
+    - title: "Performance and Scalability Guide for Cisco Identity Services Engine (ISE)"
+      url: https://www.cisco.com/c/en/us/td/docs/security/ise/performance_and_scalability/b_ise_perf_and_scale.html
+      version: "2026"
+      summary: >-
+        Guía de dimensionamiento y arquitectura de despliegue de Cisco ISE
+        (Policy Administration Node, Policy Service Node/PSN y Monitoring Node).
+        Define tres tamaños de despliegue: pequeño (hasta 50,000 sesiones
+        concurrentes activas), mediano (hasta 150,000) y grande (más de
+        150,000, con soporte de hasta 50 PSNs). Recomienda agrupar PSNs por
+        tipo de carga de trabajo y repartir autenticaciones con balanceadores
+        de carga, usando stickiness por Calling Station ID (dirección MAC) para
+        mejorar el rendimiento de sesión. Para resiliencia, sugiere redundancia
+        N+1 o N+2 dentro de cada grupo de PSNs, de forma que la pérdida de un
+        nodo no sature al resto del grupo. Es la referencia para justificar el
+        número de nodos ISE, su distribución geográfica y la capacidad de
+        autenticación 802.1X/MAB requerida por el proyecto (campus, sucursal o
+        acceso OT vía TrustSec).
 
 it_ot:
   index_pages:
@@ -165,6 +199,24 @@ it_ot:
         Cyber Vision (embebidos en switches Catalyst IE y dedicados), control de
         acceso con ISE/TrustSec y firewall industrial, y estrategia de adopción
         sin afectar producción.
+    - title: "Secure Substation Design Guide (Design Zone for Manufacturing)"
+      url: https://www.cisco.com/c/en/us/solutions/design-zone/industrial-iot-cisco-validated/utilities-and-renewables/secure-substation-design-guide.html
+      version: "2026"
+      summary: >-
+        Diseño validado de Cisco para subestaciones eléctricas seguras,
+        segmentadas y observables. Dedica un capítulo a la arquitectura de
+        Cisco Cyber Vision para seguridad de subestación: ubicación del Cyber
+        Vision Center y despliegue de sensores sobre switches de acceso
+        industrial Catalyst IE9300 e IE3505. Cubre visibilidad este-oeste
+        dentro del Electronic Security Perimeter (ESP, zona de confianza de la
+        subestación) y visibilidad norte-sur del tráfico SCADA hacia el centro
+        de control. Se apoya en un modelo centralizado de Cyber Vision Center
+        con sensores distribuidos en switches de subestación como puntos de
+        observación naturales, en línea con el enfoque de Cyber Vision para
+        entornos de utilities (agregación central con sensores en cada nivel
+        de la jerarquía de subestaciones/sitios remotos). Referencia para
+        proyectos de seguridad OT en generación, transmisión y distribución
+        eléctrica alineados a IEC 62443.
 
 observability_soc:
   index_pages:
@@ -248,6 +300,22 @@ datacenter_ai:
         Intersight. Diseño modular por unidades de escala de 32 a 128+ GPUs;
         soporta entrenamiento, fine-tuning e inferencia. Reduce el tiempo de
         puesta en marcha hasta ~50% frente a un armado a la medida (DIY).
+    - title: "Cisco Massively Scalable Data Center Network Fabric White Paper"
+      url: https://www.cisco.com/c/en/us/products/collateral/switches/nexus-9000-series-switches/white-paper-c11-743245.html
+      version: "2026"
+      summary: >-
+        Guía de diseño de fabrics Clos de gran escala sobre Nexus 9000. El
+        bloque de construcción básico es el server pod: una topología
+        spine-leaf de dos niveles donde cada leaf se conecta en malla completa
+        a cada spine del pod; escalar horizontalmente significa agregar más
+        server pods. Documenta cuatro ejemplos de diseño, incluido el fabric
+        clásico de tres niveles (spine-leaf) y un ejemplo específico para
+        redes de IA con esquema de "rail and plane". Se complementa con el
+        enfoque VXLAN BGP EVPN, que contrasta el fabric Clos de 3 etapas
+        (leaf-spine) con la variante de 5 etapas, que añade una capa de
+        super-spine para interconectar spines entre localidades o pods. Sirve
+        como referencia de dimensionamiento para fabrics de datacenter e IA de
+        muy alta escala, más allá de un solo par spine-leaf.
 
 collaboration:
   index_pages:
@@ -276,3 +344,22 @@ collaboration:
         Variante Dedicated Instance para clientes que requieren instancia
         gestionada. Base para dimensionar por usuario/estación, sesiones PSTN
         concurrentes y modalidad cloud vs híbrida.
+    - title: "Cisco Preferred Architecture for Webex Edge Connect"
+      url: https://www.cisco.com/c/dam/en/us/td/docs/solutions/PA/EdgeConnect/PA_Edge_Connect_Design.pdf
+      version: "2026"
+      summary: >-
+        Webex Edge Connect es un enlace dedicado, con soporte de QoS, entre el
+        sitio del cliente y la nube Webex, provisto a través de un proveedor
+        de cloud exchange como Equinix o Megaport. El proveedor interconecta
+        al cliente con un datacenter de Webex y enruta el tráfico destinado a
+        Webex por un peering BGP directo: Cisco administra un extremo del
+        peering de Capa 3 y el cliente el otro. Define arquitecturas para
+        Meetings y Calling (incluida la variante Calling Multi-Tenant) y para
+        Dedicated Instance, en este último caso con peering Edge Connect en
+        dos sitios dentro de una región para redundancia. Requiere una
+        conexión activa a Equinix (o equivalente), un ASN BGP propio y espacio
+        de IP pública independiente del proveedor; no acepta anuncios de
+        prefijos privados (RFC1918). Private Network Connect (PNC) es la
+        variante para Webex Calling multi-tenant; otras cargas de Webex
+        (Meetings, Mensajería, Control Hub) se acceden por Internet (OTT), no
+        solo por PNC.
