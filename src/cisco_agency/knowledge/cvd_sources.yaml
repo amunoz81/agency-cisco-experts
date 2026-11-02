@@ -73,6 +73,43 @@ secure_networking:
         aplicación/datos. Se despliega como SASE unificado (un proveedor) o SSE
         modular, con transición gradual desde arquitecturas heredadas; Digital
         Experience Monitoring da visibilidad de la experiencia de extremo a extremo.
+    - title: "Cisco Software-Defined Access (SD-Access) Design Guide (CVD)"
+      url: https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/cisco-sda-design-guide.html
+      version: "2026"
+      summary: >-
+        Guía de diseño validada de SD-Access: fabric de campus con plano de
+        overlay (LISP para control, VXLAN para datos), underlay enrutado y
+        plano de política (Cisco Catalyst Center como motor de automatización
+        y Scalable Group Tags para segmentación por intención). Catalyst
+        Center aprovisiona el underlay y automatiza los roles del fabric:
+        edge (acceso), border (conectividad externa/L3), control plane node
+        (resolución de endpoints) e intermediate. Wireless integrado en modo
+        fabric con APs Catalyst y controladores embebidos o Catalyst 9800.
+        Define modelos de referencia por tamaño de sitio (fabric en una caja
+        para sitios pequeños, distribuido para campus grandes) y multisite
+        para interconectar fabrics en distintas ubicaciones. La segmentación
+        macro (Virtual Networks) y micro (SGT) sustituye a las VLANs
+        tradicionales, habilitando políticas consistentes wired/wireless con
+        aprovisionamiento centralizado.
+    - title: "Cisco Secure Networking SD-Access Deployment Guide (CVD)"
+      url: https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/Cisco-Secure-Networking-SD-Access-Deployment-Guide.html
+      version: "2026"
+      summary: >-
+        Guía de despliegue paso a paso de SD-Access para un escenario
+        on-premises de escala media, alineada con la Cisco Secure Network
+        Reference Architecture (identidad, segmentación y política
+        consistente wired/wireless). Usa Cisco Catalyst Center para
+        aprovisionar un underlay enrutado con OSPF y construir el fabric
+        overlay con LISP (plano de control) y VXLAN (plano de datos). Cubre
+        el flujo completo: diseño de jerarquía de sitios, plantillas de red,
+        descubrimiento e integración de dispositivos, dominios de
+        autenticación 802.1X/ISE, creación de Virtual Networks y Scalable
+        Group Tags, y puesta en marcha de los nodos fabric edge, border y
+        control plane. Pensada como referencia práctica para equipos que
+        migran de una LAN campus tradicional a SD-Access siguiendo el mismo
+        marco de seguridad de red que el resto del catálogo (ISE/Duo).
+        Complementa al Campus LAN/WLAN Design Guide y al SD-Access Design
+        Guide con los pasos de implementación concretos.
 
 security:
   index_pages:
@@ -139,6 +176,65 @@ security:
         ATT&CK (TTPs) y criticidad del activo. XDR Forensics recolecta artefactos
         y habilita respuesta remota; integra soluciones Cisco y de terceros.
         Complementa a Splunk y Secure Network Analytics en el SOC.
+    - title: "Secure Remote Worker for On-Prem Design Guide"
+      url: https://www.cisco.com/c/en/us/solutions/collateral/enterprise/design-zone-security/srw-on-prem.html
+      version: "2025"
+      summary: >-
+        Guía de diseño para trabajadores remotos que acceden a aplicaciones
+        on-premises mediante VPN. Combina Cisco Secure Client (VPN de acceso
+        remoto) terminada en Secure Firewall (Firepower Threat Defense sobre
+        appliance Firepower 4100) con Duo para MFA y verificación de postura
+        del dispositivo, Umbrella para protección DNS/web del usuario remoto
+        y Secure Endpoint para protección de malware en el endpoint. Incluye
+        pasos de configuración en Firewall Management Center (FMC) para el
+        perfil de conexión VPN, grupos de túnel y políticas de grupo. El
+        diseño prioriza acceso cifrado punto a punto hasta el firewall
+        perimetral, aplicación de MFA antes de establecer el túnel y
+        verificación continua de postura (parcheo, antivirus, cifrado de
+        disco) antes de autorizar el acceso. Sirve como arquitectura base de
+        VPN de acceso remoto dentro del marco Zero Trust de Cisco,
+        complementaria a las guías Zero Trust Network/Cloud y Zero Trust
+        User/Device, que asumen el concentrador VPN ya configurado según
+        esta guía.
+    - title: "Zero Trust: Network and Cloud Security Design Guide"
+      url: https://www.cisco.com/c/en/us/solutions/collateral/enterprise/design-zone-security/zt-network-cloud-dg.html
+      version: "2025"
+      summary: >-
+        Guía de diseño Zero Trust centrada en controles de red y nube para
+        flujos de negocio típicos: empleado con dispositivo de confianza en
+        sucursal accediendo a una aplicación privada, y acceso a Internet de
+        invitados. Cisco ISE clasifica el tráfico con Scalable Group Tags
+        (SGT) y los comparte con Secure Firewall vía pxGrid; SXP distribuye
+        las etiquetas de destino entre switches (Catalyst 9300) y firewall
+        cuando no hay inline tagging. Secure Network Analytics aporta
+        telemetría NetFlow para detectar comportamiento anómalo y validar que
+        la segmentación por SGT se cumple. El diseño aplica control de acceso
+        basado en grupos (no en IP) en el límite entre segmentos de red y
+        nube, reduciendo el movimiento lateral. Pensada para leerse junto con
+        las guías Zero Trust: User and Device Security (usuario/dispositivo)
+        y Secure Remote Worker On-Prem (VPN), formando el conjunto de guías
+        Zero Trust de Cisco por capa: usuario/dispositivo, red/nube y acceso
+        remoto.
+    - title: "Zero Trust: User and Device Security Design Guide"
+      url: https://www.cisco.com/c/en/us/solutions/collateral/enterprise/design-zone-security/zt-user-device-dg.html
+      version: "2025"
+      summary: >-
+        Guía de diseño Zero Trust enfocada en la verificación continua de
+        usuario y postura del dispositivo con Cisco Duo. Cubre device
+        health (parcheo del sistema operativo, cifrado de disco, antivirus
+        activo), trusted endpoints (certificados/gestión MDM para distinguir
+        dispositivos corporativos de personales) y políticas adaptativas que
+        ajustan el acceso según riesgo del usuario, ubicación y estado del
+        dispositivo en el momento de la autenticación. Deja explícitamente
+        fuera de alcance la configuración del concentrador VPN, remitiendo a
+        la guía Secure Remote Worker for On-Prem Design Guide para esa parte.
+        El diseño aplica el principio de verificación explícita antes de
+        otorgar acceso a cualquier aplicación, on-premises o SaaS,
+        independientemente de la red de origen. Completa, junto con las
+        guías Zero Trust: Network and Cloud Security y Secure Remote Worker
+        On-Prem, el marco Zero Trust de Cisco por capas (identidad/dispositivo,
+        red/nube, acceso remoto), alineado con ISE, Secure Firewall y Secure
+        Access.
 
 it_ot:
   index_pages:
@@ -201,6 +297,27 @@ observability_soc:
         switches Catalyst 9000, para instrumentar el campus con vantage points
         internos sin hardware adicional. Complementa la observabilidad de red con
         pruebas activas desde el propio acceso.
+    - title: "Cisco Event Agentic SOCs: A Reference Architecture & Operations Guide"
+      url: https://www.cisco.com/c/dam/en/us/products/collateral/security/cisco-event-socs.pdf
+      version: "2026"
+      summary: >-
+        Guía de referencia y operación para montar un SOC temporal de alto
+        rendimiento en eventos grandes (conferencias de varios días con
+        miles de dispositivos), basada en la experiencia operativa de Cisco
+        en sus propios eventos. Combina Cisco XDR como punto de triage
+        rápido para analistas (incluyendo personal rotativo o junior) con
+        Splunk Enterprise Security para la correlación y la investigación
+        profunda de incidentes. La arquitectura de referencia se apoya en
+        Cisco Cloud Control para gestión unificada, telemetría de seguridad
+        de Cisco (red, endpoint, firewall), inteligencia de amenazas de
+        Cisco Talos y captura continua de paquetes con Endace para forense
+        posterior al incidente. El enfoque prioriza tiempos de despliegue y
+        desmontaje muy cortos, visibilidad centralizada desde el primer
+        minuto y un modelo de triage escalonado (XDR para alertas de alto
+        volumen, Splunk ES para hunting y correlación cross-fuente). Útil
+        como patrón de SOC efímero/pop-up, también aplicable a entornos
+        empresariales que necesitan escalar capacidad de monitoreo de forma
+        temporal.
 
 datacenter_ai:
   index_pages:
@@ -248,6 +365,67 @@ datacenter_ai:
         Intersight. Diseño modular por unidades de escala de 32 a 128+ GPUs;
         soporta entrenamiento, fine-tuning e inferencia. Reduce el tiempo de
         puesta en marcha hasta ~50% frente a un armado a la medida (DIY).
+    - title: "Cisco AI POD for Enterprise Training and Fine-Tuning Design Guide"
+      url: https://www.cisco.com/c/en/us/td/docs/unified_computing/ucs/UCS_CVDs/cisco_ai_pod_for_training_design.html
+      version: "ene 2026"
+      summary: >-
+        Guía de diseño validada (CVD) para clústeres de entrenamiento y
+        fine-tuning de IA empresarial con servidores GPU Cisco UCS C885A M8
+        y C845A M8, conectados a dos fabrics Nexus 9000 independientes: uno
+        backend (este-oeste, tráfico GPU-a-GPU de alto ancho de banda) y uno
+        frontend (norte-sur, acceso a almacenamiento y gestión), ambos
+        administrados con Cisco Nexus Dashboard. Define puntos de partida
+        modulares de 32, 64 y 128 GPUs, escalables en unidades, usando
+        switches leaf/spine Nexus 9332D-GX2B y 9364D-GX2A. El diseño separa
+        explícitamente los planos de tráfico para evitar que el tráfico de
+        gestión o almacenamiento compita con el tráfico RDMA de
+        entrenamiento. Forma parte de la familia de diseños AI POD de Cisco
+        (Secure AI Factory con NVIDIA), con guías de despliegue específicas
+        por proveedor de almacenamiento (NetApp, Pure Storage, VAST Data)
+        publicadas por separado. Complementa al AI PODs (At a Glance) y al
+        Data Center Networking Blueprint for AI/ML ya presentes en el
+        catálogo con el diseño validado específico de entrenamiento/
+        fine-tuning.
+    - title: "Building AI/ML Data Center Fabric using VXLAN EVPN for GPUaaS"
+      url: https://www.cisco.com/c/en/us/td/docs/dcn/whitepapers/building-aiml-dc-fabric-using-vxlan-evpn-for-gpuaas.html
+      version: "mar 2026"
+      summary: >-
+        Whitepaper técnico sobre cómo construir un fabric de datacenter para
+        IA/ML multi-tenant usando VXLAN BGP EVPN sobre switches Nexus 9000,
+        pensado para escenarios de GPU-as-a-Service donde varios clientes
+        comparten la misma infraestructura física de GPUs de forma aislada.
+        Describe un blueprint no bloqueante (non-blocking) validado por
+        Cisco, configurado y operado desde Cisco Nexus Dashboard, que
+        recomienda las plantillas de fabric eBGP Routed o VXLAN EVPN Fabric
+        como las más adecuadas para construir fabrics de IA/ML dentro de
+        Nexus Dashboard. El aislamiento multi-tenant se logra con los mismos
+        constructos EVPN del resto del catálogo (VRFs y VNIs por tenant),
+        orientados a separar clústeres de GPU de distintos clientes sobre un
+        mismo fabric físico. Complementa la guía genérica VXLAN BGP EVPN
+        Design and Implementation Guide y el Data Center Networking
+        Blueprint for AI/ML Applications ya presentes en el catálogo,
+        enfocándose en el caso de uso comercial de revender capacidad de GPU
+        como servicio.
+    - title: "AI Defense on Cisco AI PODs Reference Architecture"
+      url: https://www.cisco.com/c/en/us/td/docs/unified_computing/ucs/UCS_CVDs/AI_defense_on_Cisco_AI_PODs_reference_architecture.html
+      version: "mar 2026"
+      summary: >-
+        Arquitectura de referencia para desplegar Cisco AI Defense
+        directamente sobre la infraestructura AI POD, manteniendo el
+        procesamiento de Validación (detección) y Runtime (protección)
+        dentro del entorno del propio cliente en lugar de depender solo de
+        la nube de Cisco. La Validación ejecuta pruebas contra el modelo de
+        IA alojado en el AI POD para generar guardrails específicos del
+        modelo antes de producción. El Runtime se integra como gateway
+        desplegado en línea, de forma que AI Defense puede inspeccionar en
+        tiempo real el tráfico de entrada y salida del modelo o aplicación
+        (prompt injection, fuga de datos sensibles, denegación de servicio,
+        respuestas no deseadas). El diseño valida el despliegue sobre Red
+        Hat OpenShift, con una opción de plano de control OpenShift basado
+        en VMware, y define tres tamaños de referencia validados según
+        carga esperada. Añade la capa de seguridad de IA (AI Defense) a los
+        diseños AI POD de entrenamiento/fine-tuning ya incorporados al
+        catálogo.
 
 collaboration:
   index_pages:
@@ -276,3 +454,26 @@ collaboration:
         Variante Dedicated Instance para clientes que requieren instancia
         gestionada. Base para dimensionar por usuario/estación, sesiones PSTN
         concurrentes y modalidad cloud vs híbrida.
+    - title: "Transitioning from Unified CM to Webex Calling Deployment Guide"
+      url: https://www.cisco.com/c/dam/en/us/td/docs/solutions/PA/mcp/DEPLOYMENT_CALLING_Unified_CM_to_Webex_Calling.pdf
+      version: "2025"
+      summary: >-
+        Guía de despliegue para migrar la telefonía corporativa de Unified
+        CM on-premises a Webex Calling en la nube, con un enfoque de
+        migración por fases en lugar de corte único (big-bang), recomendado
+        para la mayoría de organizaciones por el mayor control y
+        escalabilidad en despliegues grandes o multi-región. Define tres
+        fases: Pre-Migración, Preparación de la Migración (revisión de
+        requisitos y diseño) y Migración (despliegue en Webex Calling y
+        desmantelamiento progresivo de la infraestructura on-prem). Durante
+        la fase de coexistencia, que puede durar meses, años o mantenerse
+        indefinidamente, parte de los usuarios y dispositivos operan en
+        Webex Calling mientras el resto permanece en Unified CM, con
+        interoperabilidad de llamadas entre ambos. La etapa de diseño mapea
+        el dial plan y los perfiles de usuario existentes en Unified CM a
+        sus equivalentes en Webex Calling, revisando por sitio la
+        numeración, hábitos de marcado y clases de restricción (COR), ya que
+        estas pueden cambiar durante el período de control de llamadas
+        dual. Complementa la Preferred Architecture for Webex Calling ya
+        presente en el catálogo con la ruta de migración concreta desde un
+        entorno on-prem existente.
